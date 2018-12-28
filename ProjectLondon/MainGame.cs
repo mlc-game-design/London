@@ -12,6 +12,8 @@ namespace ProjectLondon
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        string x = "Test";
+
         public MainGame()
         {
             graphics = new GraphicsDeviceManager(this);
