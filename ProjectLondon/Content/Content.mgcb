@@ -10,6 +10,25 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\packages\MonoGame.Extended.Content.Pipeline.1.1.0\tools\MonoGame.Extended.Content.Pipeline.dll
+/reference:..\..\packages\MonoGame.Extended.Content.Pipeline.1.1.0\tools\MonoGame.Extended.dll
 
 #---------------------------------- Content ---------------------------------#
+
+#begin maps/mapZone0Area1.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:maps/mapZone0Area1.tmx
+
+#begin mapTiles/LinksAwakening_OverworldTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:mapTiles/LinksAwakening_OverworldTiles.png
 

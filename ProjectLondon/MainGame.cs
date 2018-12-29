@@ -12,12 +12,17 @@ namespace ProjectLondon
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        string x = "Test";
+        OverworldManager overworldManager;
 
         public MainGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            graphics.PreferredBackBufferWidth = 640;
+            graphics.PreferredBackBufferHeight = 640;
+            graphics.IsFullScreen = false;
+            graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -28,7 +33,7 @@ namespace ProjectLondon
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            overworldManager = new OverworldManager(GraphicsDevice, Content);
 
             base.Initialize();
         }
@@ -42,7 +47,7 @@ namespace ProjectLondon
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            overworldManager.LoadMap("maps/mapZone0Area1");
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace ProjectLondon
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            
         }
 
         /// <summary>
@@ -64,7 +69,7 @@ namespace ProjectLondon
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            overworldManager.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -77,7 +82,7 @@ namespace ProjectLondon
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            overworldManager.Draw(spriteBatch);
 
             base.Draw(gameTime);
         }
