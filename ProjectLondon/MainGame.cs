@@ -14,6 +14,9 @@ namespace ProjectLondon
 
         OverworldManager overworldManager;
 
+        bool PlayerSpawned = false;
+        PlayerActor Player = null;
+
         public MainGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -34,6 +37,7 @@ namespace ProjectLondon
         protected override void Initialize()
         {
             overworldManager = new OverworldManager(GraphicsDevice, Content);
+            AssetManager.PopulateLists(Content);
 
             base.Initialize();
         }
@@ -71,6 +75,19 @@ namespace ProjectLondon
 
             overworldManager.Update(gameTime);
 
+            if(PlayerSpawned == false)
+            {
+                if(overworldManager.IsPlayerSpawn == true)
+                {
+                    Player = new PlayerActor(Content, new Vector2(overworldManager.PlayerSpawnX, overworldManager.PlayerSpawnY), 100);
+                    PlayerSpawned = true;
+                }
+            }
+            else
+            {
+                Player.Update(gameTime);
+            }
+
             base.Update(gameTime);
         }
 
@@ -82,7 +99,16 @@ namespace ProjectLondon
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            spriteBatch.Begin(transformMatrix: overworldManager.MapCamera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+
             overworldManager.Draw(spriteBatch);
+
+            if(PlayerSpawned == true)
+            {
+                Player.Draw(spriteBatch);
+            }
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

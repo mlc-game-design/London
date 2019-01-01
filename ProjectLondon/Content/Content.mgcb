@@ -15,6 +15,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin bgm/07_SwordSearch.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bgm/07_SwordSearch.mp3
+
 #begin maps/mapZone0Area1.tmx
 /importer:TiledMapImporter
 /processor:TiledMapProcessor
@@ -31,4 +37,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:mapTiles/LinksAwakening_OverworldTiles.png
+
+#begin spritesheets/GBC_LA_Link_Sheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:spritesheets/GBC_LA_Link_Sheet.png
 

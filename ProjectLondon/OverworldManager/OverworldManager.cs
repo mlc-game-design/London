@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Graphics;
@@ -18,11 +19,16 @@ namespace ProjectLondon
 
         TiledMap MapCurrent;
         TiledMapRenderer MapRenderer;
-        Camera2D MapCamera;
+        public Camera2D MapCamera { get; private set; }
 
         List<TiledMap> AdjacentMaps;
         List<MapObject> MapObjects;
-        
+
+        Song MapBackgroundMusic;
+        string MapBackgroundMusicAssetName;
+
+        public bool IsPlayerSpawn { get; private set; }
+        public int PlayerSpawnX, PlayerSpawnY;
 
         public OverworldManager(GraphicsDevice gfxDevice, ContentManager content)
         {
@@ -38,6 +44,11 @@ namespace ProjectLondon
 
             AdjacentMaps = new List<TiledMap>();
             MapObjects = new List<MapObject>();
+
+            MapBackgroundMusic = null;
+            MapBackgroundMusicAssetName = "";
+
+            IsPlayerSpawn = false;
         }
 
         /// <summary>
@@ -46,8 +57,28 @@ namespace ProjectLondon
         /// <param name="mapName"></param>
         public void LoadMap(string mapName)
         {
-            
             MapCurrent = contentManager.Load<TiledMap>(mapName);
+            LoadMapObjects();
+            LoadAdjacentMaps();
+
+            if (MapBackgroundMusic == null)
+            {
+                MapBackgroundMusic = contentManager.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
+                MediaPlayer.Volume = 1.0f;
+                MediaPlayer.Play(MapBackgroundMusic);
+            }
+            else
+            {
+                if (MapCurrent.Properties["mapBackgroundMusic"] != MapBackgroundMusicAssetName)
+                {
+                    MapBackgroundMusic = contentManager.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
+                }
+
+                MediaPlayer.Volume = 1.0f;
+                MediaPlayer.Play(MapBackgroundMusic);
+            }
+
+            MapBackgroundMusicAssetName = MapCurrent.Properties["mapBackgroundMusic"];
         }
         
         /// <summary>
@@ -95,7 +126,9 @@ namespace ProjectLondon
                     case "mapPlayerSpawn":
                         {
                             // Run Player Spawn Code Here
-
+                            PlayerSpawnX = Convert.ToInt32(mapObject.Position.X);
+                            PlayerSpawnY = Convert.ToInt32(mapObject.Position.Y);
+                            IsPlayerSpawn = true;
                             break;
                         }
                     case "mapTransition":
@@ -129,11 +162,7 @@ namespace ProjectLondon
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(transformMatrix: MapCamera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
-
             MapRenderer.Draw(MapCurrent, MapCamera.GetViewMatrix());
-
-            spriteBatch.End();
         }
     }
 }
