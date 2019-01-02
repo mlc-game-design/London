@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="6">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="14">
  <properties>
   <property name="adjacentMaps" value="mapZone0Area2;mapZone0Area3;mapZone0Area4"/>
   <property name="mapBackgroundMusic" value="07_SwordSearch"/>
@@ -127,7 +127,7 @@
    AAAAAAAAAAAAAAAAAQAAAAIAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkAAAAaAAAAGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyAAAANAAAADIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
   </data>
  </layer>
- <objectgroup id="4" name="MapObjects">
+ <objectgroup color="#ff0000" id="4" name="MapObjects">
   <object id="1" name="mapTransition" type="SlideDown" x="64" y="-16" width="32" height="16">
    <properties>
     <property name="mapDestination" value="mapZone0Area2"/>
@@ -156,6 +156,13 @@
     <property name="itemSpawnValue" type="int" value="10"/>
    </properties>
   </object>
+  <object id="6" name="mapObjectSolid" x="128" y="0" width="32" height="96"/>
+  <object id="8" name="mapObjectSolid" x="0" y="0" width="128" height="32"/>
+  <object id="9" name="mapObjectSolid" x="0" y="64" width="32" height="96"/>
+  <object id="10" name="mapObjectSolid" x="32" y="128" width="128" height="32"/>
+  <object id="11" name="mapObjectSolid" x="48" y="32" width="16" height="16"/>
+  <object id="12" name="mapObjectSolid" x="80" y="32" width="16" height="16"/>
+  <object id="13" name="mapObjectSolid" x="64" y="32" width="16" height="8"/>
  </objectgroup>
  <layer id="3" name="Foreground" width="10" height="10">
   <data encoding="base64">

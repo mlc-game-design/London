@@ -78,6 +78,7 @@ namespace ProjectLondon
             }
 
             Position = Position + _position;
+            UpdateBoundingBoxPosition();
 
             AnimationManager.Play(Animations[CurrentAnimation]);
             AnimationManager.Update(gameTime);
@@ -105,7 +106,77 @@ namespace ProjectLondon
 
         private void UpdateBoundingBoxPosition()
         {
-            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, 15, 16);
+            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y + 8, 15, 8);
+        }
+
+        public void Uncollide(Rectangle collisionRectangle)
+        {
+            Vector2 movePosition = new Vector2(0,0);
+
+            // Check Rectangle width/height
+            float _collisionWidth, _collisionHeight;
+
+            _collisionHeight = collisionRectangle.Height;
+            _collisionWidth = collisionRectangle.Width;
+
+            if(_collisionWidth > _collisionHeight)
+            {
+                // Uncollide using HEIGHT
+                if(Position.Y + 8 < collisionRectangle.Y)
+                {
+                    movePosition = movePosition + new Vector2(0, -(_collisionHeight));
+                }
+                else
+                {
+                    movePosition = movePosition + new Vector2(0, _collisionHeight);
+                }
+
+                Position = Position + movePosition;
+                UpdateBoundingBoxPosition();
+                return;
+            }
+            else if(_collisionWidth < _collisionHeight)
+            {
+                // Uncollide using WIDTH
+                if (Position.X < collisionRectangle.X)
+                {
+                    movePosition = movePosition + new Vector2(-(_collisionWidth), 0);
+                }
+                else
+                {
+                    movePosition = movePosition + new Vector2(_collisionWidth, 0);
+                }
+
+                Position = Position + movePosition;
+                UpdateBoundingBoxPosition();
+                return;
+            }
+            else
+            {
+                // Uncollide using HEIGHT
+                if (Position.Y + 8 < collisionRectangle.Y)
+                {
+                    movePosition = movePosition + new Vector2(0, -(_collisionHeight));
+                }
+                else
+                {
+                    movePosition = movePosition + new Vector2(0, _collisionHeight);
+                }
+
+                // Uncollide using WIDTH
+                if (Position.X < collisionRectangle.X)
+                {
+                    movePosition = movePosition + new Vector2(-(_collisionWidth), 0);
+                }
+                else
+                {
+                    movePosition = movePosition + new Vector2(_collisionWidth, 0);
+                }
+
+                Position = Position + movePosition;
+                UpdateBoundingBoxPosition();
+                return;
+            }
         }
     }
 }

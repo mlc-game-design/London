@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace ProjectLondon
 {
@@ -16,6 +17,8 @@ namespace ProjectLondon
 
         bool PlayerSpawned = false;
         PlayerActor Player = null;
+
+        Texture2D DebugOverlayTexture;
 
         public MainGame()
         {
@@ -52,6 +55,8 @@ namespace ProjectLondon
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             overworldManager.LoadMap("maps/mapZone0Area1");
+
+            DebugOverlayTexture = Content.Load<Texture2D>("SinglePixel");
         }
 
         /// <summary>
@@ -86,6 +91,19 @@ namespace ProjectLondon
             else
             {
                 Player.Update(gameTime);
+
+                List<MapObjectSolid> solidObjects = overworldManager.GetSolidObjects();
+
+                foreach(MapObjectSolid solid in solidObjects)
+                {
+                    if (Player.BoundingBox.Intersects(solid.BoundingBox))
+                    {
+                        // Run Uncollide Code in Player
+                        Rectangle collisionRectangle = Rectangle.Intersect(Player.BoundingBox, solid.BoundingBox);
+
+                        Player.Uncollide(collisionRectangle);
+                    }
+                }
             }
 
             base.Update(gameTime);

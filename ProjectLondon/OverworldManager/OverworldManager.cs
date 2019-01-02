@@ -22,7 +22,7 @@ namespace ProjectLondon
         public Camera2D MapCamera { get; private set; }
 
         List<TiledMap> AdjacentMaps;
-        List<MapObject> MapObjects;
+        List<MapObject> MapObjects { get; set; }
 
         Song MapBackgroundMusic;
         string MapBackgroundMusicAssetName;
@@ -142,17 +142,41 @@ namespace ProjectLondon
                             MapTransitionHandler mapTransition = new MapTransitionHandler(mapObject.Type, mapObject.Properties["mapDestination"],
                                 new Vector2((float)destinationX, (float)destinationY), new Rectangle((int)mapObject.Position.X, (int)mapObject.Position.Y, (int)mapObject.Size.Width, (int)mapObject.Size.Height));
 
+                            mapTransition.SetType("mapTransition");
+
                             MapObjects.Add(mapTransition);
                             break;
                         }
                     case "mapEntitySpawn":
                         {
                             // Spawn the Entity
-
+                            //mapEntitySpawn.SetType("mapEntitySpawn");
+                            break;
+                        }
+                    case "mapObjectSolid":
+                        {
+                            MapObjectSolid solidObject = new MapObjectSolid(mapObject.Position, (int)mapObject.Size.Width, (int)mapObject.Size.Height);
+                            solidObject.SetType("mapObjectSolid");
+                            MapObjects.Add(solidObject);
                             break;
                         }
                 }
             }
+        }
+
+        public List<MapObjectSolid> GetSolidObjects()
+        {
+            List<MapObjectSolid> solidObjects = new List<MapObjectSolid>();
+
+            foreach(MapObject mapObject in MapObjects)
+            {
+                if(mapObject.Type == "mapObjectSolid")
+                {
+                    solidObjects.Add((MapObjectSolid)mapObject);
+                }
+            }
+
+            return solidObjects;
         }
 
         public void Update(GameTime gameTime)

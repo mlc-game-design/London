@@ -8,6 +8,11 @@ namespace ProjectLondon
 {
     public abstract class MapObject
     {
+        public string Type { get; protected set; }
 
+        public void SetType(string type)
+        {
+            Type = type;
+        }
     }
 }
