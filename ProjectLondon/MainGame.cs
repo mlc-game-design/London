@@ -54,7 +54,7 @@ namespace ProjectLondon
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            overworldManager.LoadMap("maps/mapZone0Area1");
+            overworldManager.LoadMap("maps/mapZoneTest2");
 
             DebugOverlayTexture = Content.Load<Texture2D>("SinglePixel");
         }
@@ -80,32 +80,6 @@ namespace ProjectLondon
 
             overworldManager.Update(gameTime);
 
-            if(PlayerSpawned == false)
-            {
-                if(overworldManager.IsPlayerSpawn == true)
-                {
-                    Player = new PlayerActor(Content, new Vector2(overworldManager.PlayerSpawnX, overworldManager.PlayerSpawnY), 100);
-                    PlayerSpawned = true;
-                }
-            }
-            else
-            {
-                Player.Update(gameTime);
-
-                List<MapObjectSolid> solidObjects = overworldManager.GetSolidObjects();
-
-                foreach(MapObjectSolid solid in solidObjects)
-                {
-                    if (Player.BoundingBox.Intersects(solid.BoundingBox))
-                    {
-                        // Run Uncollide Code in Player
-                        Rectangle collisionRectangle = Rectangle.Intersect(Player.BoundingBox, solid.BoundingBox);
-
-                        Player.Uncollide(collisionRectangle);
-                    }
-                }
-            }
-
             base.Update(gameTime);
         }
 
@@ -120,11 +94,6 @@ namespace ProjectLondon
             spriteBatch.Begin(transformMatrix: overworldManager.MapCamera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
 
             overworldManager.Draw(spriteBatch);
-
-            if(PlayerSpawned == true)
-            {
-                Player.Draw(spriteBatch);
-            }
 
             spriteBatch.End();
 

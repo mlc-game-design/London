@@ -44,6 +44,7 @@
     <Compile Include="AssetManager\AnimationManager.cs" />
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="MainGame.cs" />
+    <Compile Include="OverworldManager\MapAreaDefinition.cs" />
     <Compile Include="OverworldManager\MapObject.cs" />
     <Compile Include="OverworldManager\MapObjectSolid.cs" />
     <Compile Include="OverworldManager\MapTransitionHandler.cs" />

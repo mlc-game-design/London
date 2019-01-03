@@ -17,9 +17,12 @@ namespace ProjectLondon
         private PlayerIndex ControllerIndex { get; set; }
 
         private float MoveSpeed { get; set; }
-        private Vector2 Position { get; set; }
+        public Vector2 Position { get; private set; }
+        public Vector2 OriginPoint { get; private set; }
+        public Vector2 TransformPosition { get; private set; }
 
         public Rectangle BoundingBox { get; protected set; }
+        public Rectangle SolidBoundingBox { get; protected set; }
 
         public float Health { get; protected set; }
         private float HealthMax { get; set; }
@@ -29,6 +32,19 @@ namespace ProjectLondon
         private Dictionary<string, Animation> Animations;
         private string CurrentAnimation;
 
+        private bool IsVisible { get; set; }
+        public AreaTransitionMoveState TransitionMoveState { get; private set; }
+
+        public enum AreaTransitionMoveState 
+        {
+            Start,
+            SlideUp,
+            SlideDown,
+            SlideRight,
+            SlideLeft,
+            Complete
+        }
+
         public PlayerActor(ContentManager content, Vector2 position, float healthMax)
         {
             Content = content;
@@ -36,13 +52,18 @@ namespace ProjectLondon
 
             MoveSpeed = 1.0f;
             Position = position;
+            OriginPoint = Position + new Vector2(8, 8);
 
             HealthMax = healthMax;
             Health = HealthMax;
 
+            IsVisible = true;
+
             CreateAnimationDictionary();
 
             UpdateBoundingBoxPosition();
+
+            TransitionMoveState = AreaTransitionMoveState.Start;
         }
 
         public void Update(GameTime gameTime)
@@ -78,6 +99,7 @@ namespace ProjectLondon
             }
 
             Position = Position + _position;
+            OriginPoint = Position + new Vector2(8, 8);
             UpdateBoundingBoxPosition();
 
             AnimationManager.Play(Animations[CurrentAnimation]);
@@ -86,17 +108,20 @@ namespace ProjectLondon
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            AnimationManager.Draw(spriteBatch, Position);
+            if(IsVisible == true)
+            {
+                AnimationManager.Draw(spriteBatch, Position);
+            }
         }
 
         private void CreateAnimationDictionary()
         {
             Animations = new Dictionary<string, Animation>();
 
-            Animations.Add("MoveUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.3f, new Vector2(65, 36)));
-            Animations.Add("MoveDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.3f, new Vector2(36, 36)));
-            Animations.Add("MoveLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.3f, new Vector2(6, 36)));
-            Animations.Add("MoveRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.3f, new Vector2(94, 36)));
+            Animations.Add("MoveUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(65, 36)));
+            Animations.Add("MoveDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(36, 36)));
+            Animations.Add("MoveLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(6, 36)));
+            Animations.Add("MoveRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(94, 36)));
 
             CurrentAnimation = "MoveDown";
 
@@ -106,7 +131,8 @@ namespace ProjectLondon
 
         private void UpdateBoundingBoxPosition()
         {
-            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y + 8, 15, 8);
+            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, 15, 16);
+            SolidBoundingBox = new Rectangle((int)Position.X, (int)Position.Y + 8, 15, 8);
         }
 
         public void Uncollide(Rectangle collisionRectangle)
@@ -177,6 +203,126 @@ namespace ProjectLondon
                 UpdateBoundingBoxPosition();
                 return;
             }
+        }
+
+        public void MoveToNewArea(Rectangle collisionRectangle, Rectangle areaRectangle, GameTime gameTime)
+        {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if(TransitionMoveState == AreaTransitionMoveState.Start)
+            {
+                // Check Rectangle width/height
+                float _collisionWidth, _collisionHeight;
+
+                _collisionHeight = collisionRectangle.Height;
+                _collisionWidth = collisionRectangle.Width;
+
+                if (_collisionWidth < _collisionHeight)
+                {
+                    // Slide into new area using X-coordinate
+                    if (OriginPoint.X < areaRectangle.Left)
+                    {
+                        TransitionMoveState = AreaTransitionMoveState.SlideRight;
+                        TransformPosition = Position + new Vector2(16, 0);
+                    }
+                    else
+                    {
+                        TransitionMoveState = AreaTransitionMoveState.SlideLeft;
+                        TransformPosition = Position + new Vector2(-16, 0);
+                    }
+                    return;
+
+                }
+                else
+                {
+                    // Slide into new area using Y-coordinate
+                    if (OriginPoint.Y > areaRectangle.Bottom)
+                    {
+                        TransitionMoveState = AreaTransitionMoveState.SlideUp;
+                        TransformPosition = Position + new Vector2(0, -16);
+                    }
+                    else
+                    {
+                        TransitionMoveState = AreaTransitionMoveState.SlideDown;
+                        TransformPosition = Position + new Vector2(0, 16);
+                    }
+                    return;
+                }
+            }
+            else
+            {
+                Vector2 movePosition = new Vector2(0, 0);
+
+                switch (TransitionMoveState)
+                {
+                    case AreaTransitionMoveState.SlideDown:
+                        {
+                            if(Position.Y >= TransformPosition.Y)
+                            {
+                                TransitionMoveState = AreaTransitionMoveState.Complete;
+                            }
+                            else
+                            {
+                                movePosition = movePosition + new Vector2(0, (64 * deltaTime));
+                            }
+                            
+                            break;
+                        }
+                    case AreaTransitionMoveState.SlideUp:
+                        {
+                            if (Position.Y <= TransformPosition.Y)
+                            {
+                                TransitionMoveState = AreaTransitionMoveState.Complete;
+                            }
+                            else
+                            {
+                                movePosition = movePosition + new Vector2(0, -(64 * deltaTime));
+                            }
+                            break;
+                        }
+                    case AreaTransitionMoveState.SlideRight:
+                        {
+                            if (Position.X >= TransformPosition.X)
+                            {
+                                TransitionMoveState = AreaTransitionMoveState.Complete;
+                            }
+                            else
+                            {
+                                movePosition = movePosition + new Vector2((64 * deltaTime), 0);
+                            }
+
+                            break;
+                        }
+                    case AreaTransitionMoveState.SlideLeft:
+                        {
+                            if (Position.X <= TransformPosition.X)
+                            {
+                                TransitionMoveState = AreaTransitionMoveState.Complete;
+                            }
+                            else
+                            {
+                                movePosition = movePosition + new Vector2(-(64 * deltaTime), 0);
+                            }
+
+                            break;
+                        }
+                }
+
+                Position = Position + movePosition;
+                UpdateBoundingBoxPosition();
+
+                AnimationManager.Update(gameTime);
+            }
+        }
+
+        public void SetVisibility(bool visible)
+        {
+            IsVisible = visible;
+        }
+
+        public void ResetAreaTransitionState()
+        {
+            TransitionMoveState = AreaTransitionMoveState.Start;
         }
     }
 }

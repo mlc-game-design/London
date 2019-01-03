@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="15">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="11">
  <properties>
-  <property name="adjacentMaps" value="mapZone0Area2;mapZone0Area3;mapZone0Area4"/>
-  <property name="mapBackgroundMusic" value="07_SwordSearch"/>
+  <property name="adjacentMaps" value="mapZone0Area1"/>
+  <property name="mapBackgroundMusic" value=""/>
  </properties>
  <tileset firstgid="1" name="LinksAwakening_OverworldTiles" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="613" columns="24">
-  <image source="../mapTiles/LinksAwakening_OverworldTiles.png" trans="004080" width="410" height="427"/>
+  <image source="C:/Users/Max/Downloads/LinksAwakening_OverworldTiles.png" trans="004080" width="410" height="427"/>
   <tile id="600">
    <animation>
     <frame tileid="380" duration="150"/>
@@ -111,60 +111,37 @@
    </animation>
   </tile>
  </tileset>
- <layer id="1" name="BaseLayer" width="10" height="10">
-  <properties>
-   <property name="adjacentMaps" value="mapZone0Area2;mapZone0Area3;mapZone0Area4"/>
-  </properties>
+ <layer id="1" name="Base Layer" width="10" height="10">
   <data encoding="base64">
-   sQAAALIAAACxAAAAsgAAAJEAAACTAAAAsQAAALIAAACxAAAAsgAAAMkAAADKAAAAyQAAAMoAAACRAAAAkwAAAMkAAADKAAAAyQAAAMoAAAB6AAAAegAAAHoAAAB6AAAAkgAAAJIAAAB6AAAAewAAALEAAACyAAAAqgAAAKoAAACSAAAAkgAAAJIAAACSAAAAkgAAAJMAAADJAAAAygAAALEAAACyAAAAkQAAAJIAAACSAAAAkgAAAJIAAACTAAAAsQAAALIAAADJAAAAygAAAJEAAACSAAAAkgAAAJIAAACSAAAAkwAAAMkAAADKAAAAsQAAALIAAACRAAAAkgAAAJIAAACSAAAAkgAAAJIAAAB6AAAAegAAAMkAAADKAAAAqQAAAKoAAACqAAAAqgAAAKoAAACqAAAAqgAAAKoAAACxAAAAsgAAALEAAACyAAAAsQAAALIAAACxAAAAsgAAALEAAACyAAAAyQAAAMoAAADJAAAAygAAAMkAAADKAAAAyQAAAMoAAADJAAAAygAAAA==
+   sQAAALIAAACxAAAAsgAAALEAAACyAAAAsQAAALIAAACxAAAAsgAAAMkAAADKAAAAyQAAAMoAAADJAAAAygAAAMkAAADKAAAAyQAAAMoAAACxAAAAsgAAAHkAAAB6AAAAegAAAHoAAAB6AAAAewAAALEAAACyAAAAyQAAAMoAAACRAAAAkgAAAJIAAACSAAAAkgAAAJMAAADJAAAAygAAALEAAACyAAAAkQAAAJIAAACSAAAAkgAAAJIAAACTAAAAsQAAALIAAADJAAAAygAAAJEAAACSAAAAkgAAAJIAAACSAAAAkwAAAMkAAADKAAAAsQAAALIAAACRAAAAkgAAAJIAAACSAAAAkgAAAJMAAACxAAAAsgAAAMkAAADKAAAAqQAAAKoAAACSAAAAkgAAAKoAAACrAAAAyQAAAMoAAACxAAAAsgAAALEAAACyAAAAkQAAAJMAAACxAAAAsgAAALEAAACyAAAAyQAAAMoAAADJAAAAygAAAJEAAACTAAAAyQAAAMoAAADJAAAAygAAAA==
   </data>
  </layer>
- <layer id="2" name="MidLayer" width="10" height="10">
-  <properties>
-   <property name="adjacentMaps" value="mapZone0Area2, mapZone0Area3, mapZone0Area4"/>
-  </properties>
+ <layer id="2" name="Mid Layer" width="10" height="10">
   <data encoding="base64">
-   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAIAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkAAAAaAAAAGwAAAAAAAAAAAAAAAAAAAAAAAAA1AAAANQAAADUAAAAyAAAANAAAADIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
   </data>
  </layer>
- <objectgroup color="#5500ff" id="4" name="Entity Layer">
-  <object id="1" name="mapTransition" type="SlideDown" x="64" y="-16" width="32" height="16">
+ <objectgroup color="#5500ff" id="3" name="Entity Layer">
+  <object id="10" name="mapTransition" x="64" y="160" width="32" height="16">
    <properties>
-    <property name="mapDestination" value="mapZone0Area2"/>
+    <property name="mapDestination" value="mapZone0Area1"/>
     <property name="mapDestinationX" type="int" value="80"/>
-    <property name="mapDestinationY" type="int" value="152"/>
-   </properties>
-  </object>
-  <object id="2" name="mapTransition" type="SlideRight" x="-16" y="32" width="16" height="32">
-   <properties>
-    <property name="mapDestination" value="mapZone0Area3"/>
-    <property name="mapDestinationX" type="int" value="64"/>
-    <property name="mapDestinationY" type="int" value="152"/>
-   </properties>
-  </object>
-  <object id="3" name="mapTransition" type="Fade" x="160" y="96" width="16" height="32">
-   <properties>
-    <property name="mapDestination" value="mapZone0Area4"/>
-    <property name="mapDestinationX" type="int" value="64"/>
-    <property name="mapDestinationY" type="int" value="152"/>
-   </properties>
-  </object>
-  <object id="4" name="mapPlayerSpawn" type="null" x="80" y="64" width="16" height="16"/>
-  <object id="5" name="mapEntitySpawn" type="itemChest" x="112" y="32" width="16" height="16">
-   <properties>
-    <property name="itemSpawn" value="itemMoney"/>
-    <property name="itemSpawnValue" type="int" value="10"/>
+    <property name="mapDestinationY" type="int" value="16"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#aa0000" id="5" name="Collision Layer">
-  <object id="14" name="solidStatic" x="96" y="0" width="32" height="32"/>
-  <object id="6" name="solidStatic" x="128" y="0" width="32" height="96"/>
-  <object id="8" name="solidStatic" x="0" y="0" width="64" height="32"/>
-  <object id="9" name="solidStatic" x="0" y="64" width="32" height="96"/>
-  <object id="10" name="solidStatic" x="32" y="128" width="128" height="32"/>
+ <objectgroup color="#aa0000" id="4" name="Collision Layer">
+  <object id="1" name="solidStatic" x="32" y="48" width="48" height="16"/>
+  <object id="2" name="solidStatic" x="0" y="0" width="32" height="160"/>
+  <object id="3" name="solidStatic" x="32" y="0" width="128" height="32"/>
+  <object id="4" name="solidStatic" x="32" y="128" width="32" height="32"/>
+  <object id="5" name="solidStatic" x="96" y="128" width="32" height="32"/>
+  <object id="6" name="solidStatic" x="128" y="32" width="32" height="128"/>
+  <object id="7" name="solidStatic" x="80" y="32" width="16" height="32"/>
+  <object id="8" name="solidStatic" x="96" y="32" width="16" height="24"/>
+  <object id="9" name="solidStatic" x="112" y="32" width="16" height="32"/>
  </objectgroup>
- <layer id="3" name="Foreground" width="10" height="10">
+ <layer id="5" name="Foreground" width="10" height="10">
   <data encoding="base64">
    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
   </data>

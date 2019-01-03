@@ -21,10 +21,27 @@
 /processorParam:Quality=Best
 /build:bgm/07_SwordSearch.mp3
 
+#begin maps/LinksAwakening_OverworldTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:maps/LinksAwakening_OverworldTiles.png
+
 #begin maps/mapZone0Area1.tmx
 /importer:TiledMapImporter
 /processor:TiledMapProcessor
 /build:maps/mapZone0Area1.tmx
+
+#begin maps/mapZoneTest2.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:maps/mapZoneTest2.tmx
 
 #begin mapTiles/LinksAwakening_OverworldTiles.png
 /importer:TextureImporter
