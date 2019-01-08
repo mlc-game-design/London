@@ -27,6 +27,7 @@ namespace ProjectLondon
         List<TiledMap> AdjacentMaps;
         List<MapObject> MapObjects { get; set; }
         List<MapAreaDefinition> Areas { get; set; }
+        List<MapEntity> Entities { get; set; }
         public List<MapObjectSolid> SolidObjects { get; protected set; }
 
         MapTransitionHandler MapTransition { get; set; }
@@ -35,6 +36,7 @@ namespace ProjectLondon
         float AreaTransitionTimer { get; set; }
         Rectangle AreaTransitionCollisionRectangle { get; set; }
         Rectangle PreviousArea { get; set; }
+        SoundEffect TransitionSound { get; set; }
 
         Song MapBackgroundMusic;
         string MapBackgroundMusicAssetName;
@@ -61,12 +63,14 @@ namespace ProjectLondon
             AdjacentMaps = new List<TiledMap>();
             MapObjects = new List<MapObject>();
             SolidObjects = new List<MapObjectSolid>();
+            Entities = new List<MapEntity>();
             Areas = new List<MapAreaDefinition>();
 
             MapTransition = null;
             IsTransitionActive = false;
             IsAreaTransitionActive = false;
             AreaTransitionTimer = 0f;
+            TransitionSound = contentManager.Load<SoundEffect>("sfx/Oracle_Stairs");
 
             MapBackgroundMusic = null;
             MapBackgroundMusicAssetName = "";
@@ -85,7 +89,6 @@ namespace ProjectLondon
         {
             MapCurrent = contentManager.Load<TiledMap>(mapName);
             LoadMapObjectLayers();
-            LoadAdjacentMaps();
 
             if (MapCurrent.Properties.ContainsKey("startZone") == true)
             {
@@ -112,38 +115,6 @@ namespace ProjectLondon
 
             MapBackgroundMusicAssetName = MapCurrent.Properties["mapBackgroundMusic"];
         }
-        
-        /// <summary>
-        /// Iterates through list of adjacent maps, loading each one into memory
-        /// </summary>
-        /// <returns></returns>
-        private TiledMap LoadAdjacentMaps()
-        {
-            // Unload existing AdjacentMaps list
-            if(AdjacentMaps.Count > 0)
-            {
-                for(int i = AdjacentMaps.Count - 1; i >= 0; i--)
-                {
-                    AdjacentMaps.RemoveAt(i);
-                }
-            }
-
-            // Get the TiledMap Property for "adjacentMaps"
-            string mapListString = MapCurrent.Properties["adjacentMaps"];
-
-            // Separate the string at each semicolon (;) and create a List using set of strings
-            List<string> mapNames = mapListString.Split(';').ToList();
-            
-            // Take List<string> compiled and load each map without MapObjects 
-            foreach(string mapName in mapNames)
-            {
-                // Load Each Map
-
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Loads MapObjects for the Active Map
         /// </summary>
@@ -159,25 +130,29 @@ namespace ProjectLondon
                 {
                     case "mapPlayerSpawn":
                         {
-                            // Run Player Spawn Code Here
-                            PlayerSpawnX = Convert.ToInt32(mapObject.Position.X);
-                            PlayerSpawnY = Convert.ToInt32(mapObject.Position.Y);
-                            IsPlayerSpawn = true;
+                            if(MainPlayer == null)
+                            {
+                                // Run Player Spawn Code Here
+                                PlayerSpawnX = Convert.ToInt32(mapObject.Position.X);
+                                PlayerSpawnY = Convert.ToInt32(mapObject.Position.Y);
+                                IsPlayerSpawn = true;
 
-                            MainPlayer = new PlayerActor(contentManager, new Vector2(PlayerSpawnX, PlayerSpawnY), 100);
-
+                                MainPlayer = new PlayerActor(contentManager, new Vector2(PlayerSpawnX, PlayerSpawnY), 100);
+                            }
+                            
                             break;
                         }
                     case "mapTransition":
                         {
                             // Create Transition Objects
                             float destinationX, destinationY;
-
+                            
                             destinationX = Convert.ToInt32(mapObject.Properties["mapDestinationX"]);
                             destinationY = Convert.ToInt32(mapObject.Properties["mapDestinationY"]);
 
-                            MapTransitionHandler mapTransition = new MapTransitionHandler(mapObject.Type, mapObject.Properties["mapDestination"],
-                                new Vector2((float)destinationX, (float)destinationY), new Rectangle((int)mapObject.Position.X, (int)mapObject.Position.Y, (int)mapObject.Size.Width, (int)mapObject.Size.Height));
+                            MapTransitionHandler mapTransition = new MapTransitionHandler(contentManager, mapObject.Properties["mapDestination"],
+                                new Vector2((float)destinationX, (float)destinationY), new Rectangle((int)mapObject.Position.X, (int)mapObject.Position.Y, (int)mapObject.Size.Width, (int)mapObject.Size.Height),
+                                mapObject.Properties["mapDestinationArea"], mapObject.Properties["mapDestinationFacing"]);
 
                             mapTransition.SetType("mapTransition");
 
@@ -187,7 +162,17 @@ namespace ProjectLondon
                     case "mapEntitySpawn":
                         {
                             // Spawn the Entity
-                            //mapEntitySpawn.SetType("mapEntitySpawn");
+                            bool isSolid = false;
+
+                            if(mapObject.Properties["isSolid"] == "true")
+                            {
+                                isSolid = true;
+                            }
+
+                            MapEntityInteractive mapEntity = new MapEntityInteractive(isSolid, new Vector2(mapObject.Position.X, mapObject.Position.Y), (int)mapObject.Size.Width, (int)mapObject.Size.Height);
+                            mapEntity.CreateAnimationDictionary(AssetManager.AnimationLibraries[mapObject.Properties["animationSetName"]], mapObject.Properties["currentAnimation"]);
+
+                            Entities.Add(mapEntity);
                             break;
                         }
                 }
@@ -213,7 +198,6 @@ namespace ProjectLondon
                 Areas.Add(area);
             }
         }
-
         private void SetAreaBoundaries(string mapAreaName)
         {
             MapAreaDefinition currentArea = null;
@@ -236,7 +220,6 @@ namespace ProjectLondon
                 ActiveArea = new Rectangle((int)currentArea.BoundingBox.X, (int)currentArea.BoundingBox.Y, (int)currentArea.BoundingBox.Width, (int)currentArea.BoundingBox.Height);
             }
         }
-
         private void UpdateCameraPosition(Rectangle sceneBoundary)
         {
             Vector2 _cameraMovePosition = new Vector2(0);
@@ -268,37 +251,69 @@ namespace ProjectLondon
 
             MapCamera.Position = MapCamera.Position + _cameraMovePosition;
         }
-
         private void AreaTransitionCameraUpdate(PlayerActor.AreaTransitionMoveState moveState, GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            float cameraMoveSpeed = 545f;
+            float cameraMoveSpeed = 320f;
 
             switch (moveState)
             {
                 case PlayerActor.AreaTransitionMoveState.SlideDown:
                     {
-                        MapCamera.Position = MapCamera.Position + new Vector2(0, cameraMoveSpeed * deltaTime);
+                        if(MapCamera.BoundingRectangle.Bottom < ActiveArea.Bottom)
+                        {
+                            MapCamera.Position = MapCamera.Position + new Vector2(0, cameraMoveSpeed * deltaTime);
+                        }
+                        
                         break;
                     }
                 case PlayerActor.AreaTransitionMoveState.SlideUp:
                     {
-                        MapCamera.Position = MapCamera.Position - new Vector2(0, cameraMoveSpeed * deltaTime);
+                        if (MapCamera.BoundingRectangle.Top > ActiveArea.Top)
+                        {
+                            MapCamera.Position = MapCamera.Position - new Vector2(0, cameraMoveSpeed * deltaTime);
+                        }
+                            
                         break;
                     }
                 case PlayerActor.AreaTransitionMoveState.SlideLeft:
                     {
-                        MapCamera.Position = MapCamera.Position - new Vector2(cameraMoveSpeed * deltaTime, 0);
+                        if(MapCamera.BoundingRectangle.Left > ActiveArea.Left)
+                        {
+                            MapCamera.Position = MapCamera.Position - new Vector2(cameraMoveSpeed * deltaTime, 0);
+                        }
+                        
                         break;
                     }
                 case PlayerActor.AreaTransitionMoveState.SlideRight:
                     {
-                        MapCamera.Position = MapCamera.Position + new Vector2(cameraMoveSpeed * deltaTime, 0);
+                        if(MapCamera.BoundingRectangle.Right < ActiveArea.Right)
+                        {
+                            MapCamera.Position = MapCamera.Position + new Vector2(cameraMoveSpeed * deltaTime, 0);
+                        }
+                        
                         break;
                     }
             }
         }
+        private void UnloadMap()
+        {
+            MapObjects.Clear();
+            SolidObjects.Clear();
+            Areas.Clear();
+            AdjacentMaps.Clear();
 
+            LoadMap("maps/" + MapTransition.DestinationMapName);
+
+            MainPlayer.SetPosition(MapTransition.DestinationPosition);
+            MainPlayer.SetFacing(MapTransition.DestinationFacing);
+
+            SetAreaBoundaries(MapTransition.DestinationAreaName);
+            MapCamera.Position = MainPlayer.Position - new Vector2(MapCamera.BoundingRectangle.Width / 2, MapCamera.BoundingRectangle.Height / 2);
+            UpdateCameraPosition(ActiveArea);
+
+            MapTransition.MapChangeComplete((Rectangle)MapCamera.BoundingRectangle);
+        }
         public void Update(GameTime gameTime)
         {
             MapRenderer.Update(MapCurrent, gameTime);
@@ -343,15 +358,28 @@ namespace ProjectLondon
                     {
                         MapTransitionHandler transitionObject = (MapTransitionHandler)mapObject;
 
-                        if (transitionObject.BoundingBox.Intersects(MainPlayer.BoundingBox))
+                        if (transitionObject.BoundingBox.Intersects(MainPlayer.SolidBoundingBox))
                         {
-                            // Player is touching a transition
-                            //MapTransition = transitionObject;
-                            //TiledMap _destinationMap = contentManager.Load<TiledMap>(MapTransition.DestinationMapName);
-                            //IsTransitionActive = true;
-
+                            MapTransition = transitionObject;
+                            transitionObject.InitializeTransition(MapCurrent, (Rectangle)MapCamera.BoundingRectangle, 
+                                TransitionSound, graphicsDevice);
+                            IsTransitionActive = true;
                         }
                     }
+                }
+
+                foreach (MapEntity entity in Entities)
+                {
+                    entity.Update(gameTime);
+
+                    if (MainPlayer.BoundingBox.Intersects(entity.BoundingBox) && entity.IsSolid == true)
+                    {
+                        // Run Uncollide Code in Player
+                        Rectangle collisionRectangle = Rectangle.Intersect(MainPlayer.SolidBoundingBox, entity.BoundingBox);
+
+                        MainPlayer.Uncollide(collisionRectangle);
+                    }
+
                 }
 
                 
@@ -375,37 +403,66 @@ namespace ProjectLondon
                     {
                         MainPlayer.MoveToNewArea(AreaTransitionCollisionRectangle, ActiveArea, gameTime);
                         AreaTransitionCameraUpdate(MainPlayer.TransitionMoveState, gameTime);
-                        
                     }
                 }
             }
             else
             {
-                MapTransition.Update(gameTime);
+                if(MapTransition.State == MapTransitionHandler.TransitionState.MapChange)
+                {
+                    UnloadMap();
+                }
+                else if(MapTransition.State == MapTransitionHandler.TransitionState.Complete) {
+                    IsTransitionActive = false;
+                    MapTransition = null;
+                }
+                else
+                {
+                    MapTransition.Update(gameTime);
+                }
             }
             
         }
-
         public void Draw(SpriteBatch spriteBatch)
         {
-            MapRenderer.Draw(MapCurrent, MapCamera.GetViewMatrix());
-
-            if(IsPlayerSpawn == true)
+            if(MapTransition != null && MapTransition.State == MapTransitionHandler.TransitionState.MapChange)
             {
-                MainPlayer.Draw(spriteBatch);
-                //spriteBatch.Draw(DebugTexture, MainPlayer.BoundingBox, Color.Red * 0.4f);
-                //spriteBatch.Draw(DebugTexture, MainPlayer.SolidBoundingBox, Color.DarkRed * 0.6f);
+                MapTransition.Draw(spriteBatch);
             }
-
-            if(IsAreaTransitionActive == true)
+            else
             {
-                //spriteBatch.Draw(DebugTexture, AreaTransitionCollisionRectangle, Color.Yellow * 0.4f);
-            }
+                MapRenderer.Draw(MapCurrent, MapCamera.GetViewMatrix());
 
-            foreach(MapObjectSolid solid in SolidObjects)
-            {
-                //spriteBatch.Draw(DebugTexture, solid.BoundingBox, Color.Red * 0.4f);
+                if (IsPlayerSpawn == true)
+                {
+                    MainPlayer.Draw(spriteBatch);
+                    //spriteBatch.Draw(DebugTexture, MainPlayer.BoundingBox, Color.Red * 0.4f);
+                    //spriteBatch.Draw(DebugTexture, MainPlayer.SolidBoundingBox, Color.DarkRed * 0.6f);
+                }
+
+                if (IsAreaTransitionActive == true)
+                {
+                    //spriteBatch.Draw(DebugTexture, AreaTransitionCollisionRectangle, Color.Yellow * 0.4f);
+                }
+
+                foreach (MapObjectSolid solid in SolidObjects)
+                {
+                    //spriteBatch.Draw(DebugTexture, solid.BoundingBox, Color.Red * 0.4f);
+                }
+
+                foreach (MapEntity entity in Entities)
+                {
+                    entity.Draw(spriteBatch);
+                }
+
+                if (IsTransitionActive == true)
+                {
+                    MapTransition.Draw(spriteBatch);
+                }
             }
+            
+
+            
         }
     }
 }

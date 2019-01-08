@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="36">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="38">
  <properties>
   <property name="adjacentMaps" value=""/>
   <property name="mapBackgroundMusic" value="07_SwordSearch"/>
@@ -124,6 +124,15 @@
  </layer>
  <objectgroup color="#5500ff" id="3" name="Entity Layer">
   <object id="8" name="mapPlayerSpawn" x="256" y="368" width="16" height="16"/>
+  <object id="36" name="mapTransition" x="352" y="344" width="16" height="8">
+   <properties>
+    <property name="mapDestination" value="DungeonMap_StarCave_1F"/>
+    <property name="mapDestinationArea" value="Area9"/>
+    <property name="mapDestinationFacing" value="Down"/>
+    <property name="mapDestinationX" type="int" value="368"/>
+    <property name="mapDestinationY" type="int" value="16"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup color="#aa0000" id="4" name="Collision Layer">
   <object id="9" name="solidStatic" x="240" y="304" width="112" height="48"/>

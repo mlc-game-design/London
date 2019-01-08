@@ -21,6 +21,23 @@
 /processorParam:Quality=Best
 /build:bgm/07_SwordSearch.mp3
 
+#begin bgm/20_CAVE.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bgm/20_CAVE.mp3
+
+#begin bgm/DUNGEON1.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bgm/DUNGEON1.mp3
+
+#begin maps/DungeonMap_StarCave_1F.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:maps/DungeonMap_StarCave_1F.tmx
+
 #begin maps/LinksAwakening_OverworldTiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -33,15 +50,39 @@
 /processorParam:TextureFormat=Color
 /build:maps/LinksAwakening_OverworldTiles.png
 
-#begin maps/mapZone0Area1.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:maps/mapZone0Area1.tmx
-
 #begin maps/mapZoneTest2.tmx
 /importer:TiledMapImporter
 /processor:TiledMapProcessor
 /build:maps/mapZoneTest2.tmx
+
+#begin maps/mapZoneTestCave.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:maps/mapZoneTestCave.tmx
+
+#begin mapTiles/Dungeons.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:mapTiles/Dungeons.png
+
+#begin mapTiles/GUI.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:mapTiles/GUI.png
 
 #begin mapTiles/LinksAwakening_OverworldTiles.png
 /importer:TextureImporter
@@ -54,6 +95,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:mapTiles/LinksAwakening_OverworldTiles.png
+
+#begin mapTiles/Overworld_Light.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:mapTiles/Overworld_Light.png
+
+#begin sfx/LA_Stairs.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sfx/LA_Stairs.wav
+
+#begin sfx/Oracle_Stairs.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sfx/Oracle_Stairs.wav
 
 #begin SinglePixel.png
 /importer:TextureImporter
@@ -78,4 +143,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:spritesheets/GBC_LA_Link_Sheet.png
+
+#begin spritesheets/Sprites.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:spritesheets/Sprites.png
 

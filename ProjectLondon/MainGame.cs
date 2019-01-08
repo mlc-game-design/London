@@ -15,9 +15,6 @@ namespace ProjectLondon
 
         OverworldManager overworldManager;
 
-        bool PlayerSpawned = false;
-        PlayerActor Player = null;
-
         Texture2D DebugOverlayTexture;
 
         public MainGame()

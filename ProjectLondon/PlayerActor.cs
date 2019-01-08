@@ -33,8 +33,9 @@ namespace ProjectLondon
         private string CurrentAnimation;
 
         private bool IsVisible { get; set; }
-        public AreaTransitionMoveState TransitionMoveState { get; private set; }
 
+        public AreaTransitionMoveState TransitionMoveState { get; private set; }
+        public PlayerFacing Facing { get; private set; }
         public enum AreaTransitionMoveState 
         {
             Start,
@@ -43,6 +44,13 @@ namespace ProjectLondon
             SlideRight,
             SlideLeft,
             Complete
+        }
+        public enum PlayerFacing
+        {
+            Up,
+            Down,
+            Left,
+            Right
         }
 
         public PlayerActor(ContentManager content, Vector2 position, float healthMax)
@@ -64,6 +72,8 @@ namespace ProjectLondon
             UpdateBoundingBoxPosition();
 
             TransitionMoveState = AreaTransitionMoveState.Start;
+
+            Facing = PlayerFacing.Down;
         }
 
         public void Update(GameTime gameTime)
@@ -78,24 +88,28 @@ namespace ProjectLondon
             {
                 CurrentAnimation = "MoveUp";
                 _position = _position + new Vector2(0, -MoveSpeed);
+                Facing = PlayerFacing.Up;
             }
 
             if (gamePadState.IsButtonDown(Buttons.DPadDown) == true)
             {
                 CurrentAnimation = "MoveDown";
                 _position = _position + new Vector2(0, MoveSpeed);
+                Facing = PlayerFacing.Down;
             }
 
             if (gamePadState.IsButtonDown(Buttons.DPadRight) == true)
             {
                 CurrentAnimation = "MoveRight";
                 _position = _position + new Vector2(MoveSpeed, 0);
+                Facing = PlayerFacing.Right;
             }
 
             if (gamePadState.IsButtonDown(Buttons.DPadLeft) == true)
             {
                 CurrentAnimation = "MoveLeft";
                 _position = _position + new Vector2(-MoveSpeed, 0);
+                Facing = PlayerFacing.Left;
             }
 
             Position = Position + _position;
@@ -105,7 +119,6 @@ namespace ProjectLondon
             AnimationManager.Play(Animations[CurrentAnimation]);
             AnimationManager.Update(gameTime);
         }
-
         public void Draw(SpriteBatch spriteBatch)
         {
             if(IsVisible == true)
@@ -118,23 +131,21 @@ namespace ProjectLondon
         {
             Animations = new Dictionary<string, Animation>();
 
-            Animations.Add("MoveUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(65, 36)));
-            Animations.Add("MoveDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(36, 36)));
-            Animations.Add("MoveLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(6, 36)));
-            Animations.Add("MoveRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 15, 0.2f, new Vector2(94, 36)));
+            Animations.Add("MoveUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 160)));
+            Animations.Add("MoveDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 160)));
+            Animations.Add("MoveLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 160)));
+            Animations.Add("MoveRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 160)));
 
             CurrentAnimation = "MoveDown";
 
             AnimationManager = new AnimationManager(Animations[CurrentAnimation]);
             AnimationManager.Play(Animations[CurrentAnimation]);
         }
-
         private void UpdateBoundingBoxPosition()
         {
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, 15, 16);
             SolidBoundingBox = new Rectangle((int)Position.X, (int)Position.Y + 8, 15, 8);
         }
-
         public void Uncollide(Rectangle collisionRectangle)
         {
             Vector2 movePosition = new Vector2(0,0);
@@ -204,7 +215,6 @@ namespace ProjectLondon
                 return;
             }
         }
-
         public void MoveToNewArea(Rectangle collisionRectangle, Rectangle areaRectangle, GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -263,7 +273,7 @@ namespace ProjectLondon
                             }
                             else
                             {
-                                movePosition = movePosition + new Vector2(0, (64 * deltaTime));
+                                movePosition = movePosition + new Vector2(0, (32 * deltaTime));
                             }
                             
                             break;
@@ -276,7 +286,7 @@ namespace ProjectLondon
                             }
                             else
                             {
-                                movePosition = movePosition + new Vector2(0, -(64 * deltaTime));
+                                movePosition = movePosition + new Vector2(0, -(32 * deltaTime));
                             }
                             break;
                         }
@@ -288,7 +298,7 @@ namespace ProjectLondon
                             }
                             else
                             {
-                                movePosition = movePosition + new Vector2((64 * deltaTime), 0);
+                                movePosition = movePosition + new Vector2((32 * deltaTime), 0);
                             }
 
                             break;
@@ -301,7 +311,7 @@ namespace ProjectLondon
                             }
                             else
                             {
-                                movePosition = movePosition + new Vector2(-(64 * deltaTime), 0);
+                                movePosition = movePosition + new Vector2(-(32 * deltaTime), 0);
                             }
 
                             break;
@@ -314,15 +324,47 @@ namespace ProjectLondon
                 AnimationManager.Update(gameTime);
             }
         }
-
         public void SetVisibility(bool visible)
         {
             IsVisible = visible;
         }
-
         public void ResetAreaTransitionState()
         {
             TransitionMoveState = AreaTransitionMoveState.Start;
+        }
+        public void SetPosition(Vector2 newPosition)
+        {
+            Position = newPosition;
+        }
+        public void SetFacing(string facing)
+        {
+            switch (facing)
+            {
+                case "Up":
+                    {
+                        CurrentAnimation = "MoveUp";
+                        Facing = PlayerFacing.Up;
+                        break;
+                    }
+                case "Down":
+                    {
+                        CurrentAnimation = "MoveDown";
+                        Facing = PlayerFacing.Down;
+                        break;
+                    }
+                case "Right":
+                    {
+                        CurrentAnimation = "MoveRight";
+                        Facing = PlayerFacing.Right;
+                        break;
+                    }
+                case "Left":
+                    {
+                        CurrentAnimation = "MoveLeft";
+                        Facing = PlayerFacing.Left;
+                        break;
+                    }
+            }
         }
     }
 }
