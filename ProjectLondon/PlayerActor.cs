@@ -15,6 +15,7 @@ namespace ProjectLondon
     {
         private ContentManager Content { get; set; }
         private PlayerIndex ControllerIndex { get; set; }
+        private Dictionary<string, bool> ControlKeys { get; set; }
         public bool IsActive { get; protected set; }
 
         private float MoveSpeed { get; set; }
@@ -40,6 +41,7 @@ namespace ProjectLondon
 
         public AreaTransitionMoveState TransitionMoveState { get; private set; }
         public PlayerFacing Facing { get; private set; }
+        public PlayerController ControlStyle { get; private set; }
         public enum AreaTransitionMoveState 
         {
             Start,
@@ -56,12 +58,28 @@ namespace ProjectLondon
             Left,
             Right
         }
+        public enum PlayerController
+        {
+            Keyboard,
+            Gamepad
+        }
 
         public PlayerActor(ContentManager content, Vector2 position, float healthMax)
         {
+            GamePadState _gamepadState = GamePad.GetState(PlayerIndex.One);
+
             Content = content;
-            ControllerIndex = PlayerIndex.One;
             IsActive = false;
+
+            if(_gamepadState.IsConnected == true)
+            {
+                ControlStyle = PlayerController.Gamepad;
+            }
+            else{
+                ControlStyle = PlayerController.Keyboard;
+            }
+
+            CreateControlConfiguration();
 
             MoveSpeed = 1.0f;
             Position = position;
@@ -74,11 +92,9 @@ namespace ProjectLondon
             IsVisible = true;
 
             CreateAnimationDictionary();
-
             UpdateBoundingBoxPosition();
 
             TransitionMoveState = AreaTransitionMoveState.Start;
-
             Facing = PlayerFacing.Down;
         }
 
@@ -95,10 +111,10 @@ namespace ProjectLondon
                 AnimationOverrideTimer -= _deltaTime;
             }
 
-            GamePadState gamePadState = GamePad.GetState(ControllerIndex);
+            HandleInput();
             Vector2 _position = new Vector2(0);
 
-            if (gamePadState.IsButtonDown(Buttons.DPadUp) == true)
+            if (ControlKeys["UpKey"] == true)
             {
                 if (IsAnimationOverride == false)
                 {
@@ -108,7 +124,7 @@ namespace ProjectLondon
                 Facing = PlayerFacing.Up;
             }
 
-            if (gamePadState.IsButtonDown(Buttons.DPadDown) == true)
+            if (ControlKeys["DownKey"] == true)
             {
                 if (IsAnimationOverride == false)
                 {
@@ -118,7 +134,7 @@ namespace ProjectLondon
                 Facing = PlayerFacing.Down;
             }
 
-            if (gamePadState.IsButtonDown(Buttons.DPadRight) == true)
+            if (ControlKeys["RightKey"] == true)
             {
                 if (IsAnimationOverride == false)
                 {
@@ -128,7 +144,7 @@ namespace ProjectLondon
                 Facing = PlayerFacing.Right;
             }
 
-            if (gamePadState.IsButtonDown(Buttons.DPadLeft) == true)
+            if (ControlKeys["LeftKey"] == true)
             {
                 if (IsAnimationOverride == false)
                 {
@@ -153,6 +169,106 @@ namespace ProjectLondon
             }
         }
 
+        private void CreateControlConfiguration()
+        {
+            ControlKeys = new Dictionary<string, bool>();
+
+            ControlKeys.Add("UpKey", false);
+            ControlKeys.Add("DownKey", false);
+            ControlKeys.Add("RightKey", false);
+            ControlKeys.Add("LeftKey", false);
+            ControlKeys.Add("AttackKey", false);
+            ControlKeys.Add("StartKey", false);
+        }
+        public void HandleInput()
+        {
+            switch (ControlStyle)
+            {
+                case PlayerController.Keyboard:
+                    {
+                        KeyboardState _keystate = Keyboard.GetState();
+
+                        if (_keystate.IsKeyDown(Keys.Up) == true)
+                        {
+                            ControlKeys["UpKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["UpKey"] = false;
+                        }
+
+                        if (_keystate.IsKeyDown(Keys.Down) == true)
+                        {
+                            ControlKeys["DownKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["DownKey"] = false;
+                        }
+
+                        if (_keystate.IsKeyDown(Keys.Right) == true)
+                        {
+                            ControlKeys["RightKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["RightKey"] = false;
+                        }
+
+                        if (_keystate.IsKeyDown(Keys.Left) == true)
+                        {
+                            ControlKeys["LeftKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["LeftKey"] = false;
+                        }
+                        break;
+                    }
+                case PlayerController.Gamepad:
+                    {
+                        GamePadState gamePadState = GamePad.GetState(ControllerIndex);
+
+                        if (gamePadState.IsButtonDown(Buttons.DPadUp) == true)
+                        {
+                            ControlKeys["UpKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["UpKey"] = false;
+                        }
+
+                        if (gamePadState.IsButtonDown(Buttons.DPadDown) == true)
+                        {
+                            ControlKeys["DownKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["DownKey"] = false;
+                        }
+
+                        if (gamePadState.IsButtonDown(Buttons.DPadRight) == true)
+                        {
+                            ControlKeys["RightKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["RightKey"] = false;
+                        }
+
+                        if (gamePadState.IsButtonDown(Buttons.DPadLeft) == true)
+                        {
+                            ControlKeys["LeftKey"] = true;
+                        }
+                        else
+                        {
+                            ControlKeys["LeftKey"] = false;
+                        }
+                        break;
+                    }
+            }
+        }
+
         public void Activate()
         {
             IsActive = true;
@@ -161,6 +277,11 @@ namespace ProjectLondon
         {
             IsActive = false;
         }
+        public void SetVisibility(bool visible)
+        {
+            IsVisible = visible;
+        }
+
         private void CreateAnimationDictionary()
         {
             Animations = new Dictionary<string, Animation>();
@@ -208,6 +329,7 @@ namespace ProjectLondon
         {
             IsAnimationOverride = false;
         }
+
         private void UpdateBoundingBoxPosition()
         {
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, 15, 16);
@@ -282,6 +404,7 @@ namespace ProjectLondon
                 return;
             }
         }
+
         public void MoveToNewArea(Rectangle collisionRectangle, Rectangle areaRectangle, GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -391,14 +514,11 @@ namespace ProjectLondon
                 AnimationManager.Update(gameTime);
             }
         }
-        public void SetVisibility(bool visible)
-        {
-            IsVisible = visible;
-        }
         public void ResetAreaTransitionState()
         {
             TransitionMoveState = AreaTransitionMoveState.Start;
         }
+
         public void SetPosition(Vector2 newPosition)
         {
             Position = newPosition;

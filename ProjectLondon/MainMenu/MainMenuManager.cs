@@ -79,6 +79,7 @@ namespace ProjectLondon
         public void Update(GameTime gameTime)
         {
             GamePadState _gamepadState = GamePad.GetState(PlayerIndex.One);
+            KeyboardState _keyState = Keyboard.GetState();
             float _deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if(PressStartTimer <= 0)
@@ -104,7 +105,7 @@ namespace ProjectLondon
                 PressStartTimer -= _deltaTime;
             }
 
-            if(_gamepadState.IsButtonDown(Buttons.Start) == true || _gamepadState.IsButtonDown(Buttons.A) == true)
+            if(_gamepadState.IsButtonDown(Buttons.Start) == true || _gamepadState.IsButtonDown(Buttons.A) == true || _keyState.IsKeyDown(Keys.Enter))
             {
                 State = MainMenuState.Complete;
             }
