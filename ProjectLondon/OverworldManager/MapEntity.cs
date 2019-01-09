@@ -9,22 +9,12 @@ using Microsoft.Xna.Framework.Content;
 
 namespace ProjectLondon
 {
-    public abstract class MapEntity
+    public abstract class MapEntity : MapObject
     {
         public bool IsAnimated { get; protected set; }
         public bool IsSolid { get; protected set; }
 
-        public Vector2 Position { get; protected set; }
-        public Rectangle BoundingBox { get; protected set; }
-
-        public virtual void Update(GameTime gameTime)
-        {
-
-        }
-
-        public virtual void Draw(SpriteBatch spriteBatch)
-        {
-
-        }
+        public abstract void Update(GameTime gameTime);
+        public abstract void Draw(SpriteBatch spriteBatch);
     }
 }

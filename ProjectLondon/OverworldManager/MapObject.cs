@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace ProjectLondon
 {
-    public abstract class MapObject
+    public abstract class MapObject : IMapObject
     {
         public string Type { get; protected set; }
-
-        public void SetType(string type)
+        public bool IsActive { get; protected set; }
+        public Vector2 Position { get; protected set; }
+        public Rectangle BoundingBox { get; protected set; }
+        
+        public void Activate()
         {
-            Type = type;
+            IsActive = true;
+        }
+        public void Deactivate()
+        {
+            IsActive = false;
         }
     }
 }

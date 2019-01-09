@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 
 namespace ProjectLondon
@@ -13,7 +14,16 @@ namespace ProjectLondon
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        OverworldManager overworldManager;
+        MainMenuManager MainMenuManager;
+        SaveManager SaveManager;
+        OverworldManager OverworldManager;
+        PlayerActor MainPlayer;
+        MainGameState State = MainGameState.MainMenu;
+        enum MainGameState
+        {
+            MainMenu,
+            NormalPlay
+        }
 
         Texture2D DebugOverlayTexture;
 
@@ -36,8 +46,8 @@ namespace ProjectLondon
         /// </summary>
         protected override void Initialize()
         {
-            overworldManager = new OverworldManager(GraphicsDevice, Content);
             AssetManager.PopulateLists(Content);
+            MainMenuManager = new MainMenuManager(Content);
 
             base.Initialize();
         }
@@ -50,8 +60,6 @@ namespace ProjectLondon
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            overworldManager.LoadMap("maps/mapZoneTest2");
 
             DebugOverlayTexture = Content.Load<Texture2D>("SinglePixel");
         }
@@ -75,8 +83,39 @@ namespace ProjectLondon
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            overworldManager.Update(gameTime);
-
+            switch (State)
+            {
+                case MainGameState.MainMenu:
+                    {
+                        if(MainMenuManager.State != MainMenuManager.MainMenuState.Complete)
+                        {
+                            MainMenuManager.Update(gameTime);
+                        }
+                        else
+                        {
+                            MediaPlayer.Stop();
+                            MainMenuManager = null;
+                            MainPlayer = new PlayerActor(Content, new Vector2(0), 6);
+                            OverworldManager = new OverworldManager(GraphicsDevice, Content, MainPlayer);
+                            OverworldManager.LoadMap("maps/mapZoneTest2");
+                            OverworldManager.Activate();
+                            MainPlayer.SetPosition(new Vector2(OverworldManager.PlayerSpawnX, OverworldManager.PlayerSpawnY));
+                            MainPlayer.Activate();
+                            State = MainGameState.NormalPlay;
+                        }
+                        
+                        break;
+                    }
+                case MainGameState.NormalPlay:
+                    {
+                        if (OverworldManager.IsActive == true)
+                        {
+                            OverworldManager.Update(gameTime);
+                        }
+                        break;
+                    }
+            }
+            
             base.Update(gameTime);
         }
 
@@ -88,11 +127,30 @@ namespace ProjectLondon
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(transformMatrix: overworldManager.MapCamera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+            switch (State)
+            {
+                case MainGameState.NormalPlay:
+                    {
+                        spriteBatch.Begin(transformMatrix: OverworldManager.MapCamera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
 
-            overworldManager.Draw(spriteBatch);
+                        if (OverworldManager.IsActive == true)
+                        {
+                            OverworldManager.Draw(spriteBatch);
+                        }
 
-            spriteBatch.End();
+                        spriteBatch.End();
+                        break;
+                    }
+                case MainGameState.MainMenu:
+                    {
+                        spriteBatch.Begin();
+                        MainMenuManager.Draw(spriteBatch);
+                        spriteBatch.End();
+                        break;
+                    }
+            }
+
+            
 
             base.Draw(gameTime);
         }

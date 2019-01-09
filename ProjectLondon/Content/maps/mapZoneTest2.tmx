@@ -2,7 +2,7 @@
 <map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="38">
  <properties>
   <property name="adjacentMaps" value=""/>
-  <property name="mapBackgroundMusic" value="07_SwordSearch"/>
+  <property name="mapBackgroundMusic" value="Galway"/>
   <property name="startZone" value="Area5"/>
  </properties>
  <tileset firstgid="1" name="LinksAwakening_OverworldTiles" tilewidth="16" tileheight="16" spacing="1" margin="1" tilecount="613" columns="24">

@@ -27,11 +27,29 @@
 /processorParam:Quality=Best
 /build:bgm/20_CAVE.mp3
 
+#begin bgm/Baba Yaga.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bgm/Baba Yaga.mp3
+
+#begin bgm/Brittle Rille.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bgm/Brittle Rille.mp3
+
 #begin bgm/DUNGEON1.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
 /build:bgm/DUNGEON1.mp3
+
+#begin bgm/Galway.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:bgm/Galway.mp3
 
 #begin maps/DungeonMap_StarCave_1F.tmx
 /importer:TiledMapImporter
@@ -132,6 +150,13 @@
 /processorParam:TextureFormat=Color
 /build:SinglePixel.png
 
+#begin spritefonts/MainMenuFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:spritefonts/MainMenuFont.spritefont
+
 #begin spritesheets/GBC_LA_Link_Sheet.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -155,4 +180,28 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:spritesheets/Sprites.png
+
+#begin textures/mainMenu/MainMenuBackBeta.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/mainMenu/MainMenuBackBeta.png
+
+#begin textures/mainMenu/MainMenuBackBeta01.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/mainMenu/MainMenuBackBeta01.png
 

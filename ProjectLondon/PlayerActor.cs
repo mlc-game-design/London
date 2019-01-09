@@ -15,6 +15,7 @@ namespace ProjectLondon
     {
         private ContentManager Content { get; set; }
         private PlayerIndex ControllerIndex { get; set; }
+        public bool IsActive { get; protected set; }
 
         private float MoveSpeed { get; set; }
         public Vector2 Position { get; private set; }
@@ -26,8 +27,11 @@ namespace ProjectLondon
 
         public float Health { get; protected set; }
         private float HealthMax { get; set; }
+        private List<PlayerActorItem> PlayerItems { get; set; }
 
         AnimationManager AnimationManager { get; set; }
+        public bool IsAnimationOverride { get; protected set; }
+        private float AnimationOverrideTimer { get; set; }
 
         private Dictionary<string, Animation> Animations;
         private string CurrentAnimation;
@@ -57,6 +61,7 @@ namespace ProjectLondon
         {
             Content = content;
             ControllerIndex = PlayerIndex.One;
+            IsActive = false;
 
             MoveSpeed = 1.0f;
             Position = position;
@@ -64,6 +69,7 @@ namespace ProjectLondon
 
             HealthMax = healthMax;
             Health = HealthMax;
+            PlayerItems = new List<PlayerActorItem>();
 
             IsVisible = true;
 
@@ -78,36 +84,56 @@ namespace ProjectLondon
 
         public void Update(GameTime gameTime)
         {
+            float _deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if(AnimationOverrideTimer <= 0 && IsAnimationOverride == true)
+            {
+                ReleaseAnimationOverride();
+            }
+            else
+            {
+                AnimationOverrideTimer -= _deltaTime;
+            }
+
             GamePadState gamePadState = GamePad.GetState(ControllerIndex);
-
-            //If Negative, stick is leaning more vertically than horizontally
-
             Vector2 _position = new Vector2(0);
 
             if (gamePadState.IsButtonDown(Buttons.DPadUp) == true)
             {
-                CurrentAnimation = "MoveUp";
+                if (IsAnimationOverride == false)
+                {
+                    CurrentAnimation = "MoveUp";
+                }
                 _position = _position + new Vector2(0, -MoveSpeed);
                 Facing = PlayerFacing.Up;
             }
 
             if (gamePadState.IsButtonDown(Buttons.DPadDown) == true)
             {
-                CurrentAnimation = "MoveDown";
+                if (IsAnimationOverride == false)
+                {
+                    CurrentAnimation = "MoveDown";
+                }
                 _position = _position + new Vector2(0, MoveSpeed);
                 Facing = PlayerFacing.Down;
             }
 
             if (gamePadState.IsButtonDown(Buttons.DPadRight) == true)
             {
-                CurrentAnimation = "MoveRight";
+                if (IsAnimationOverride == false)
+                {
+                    CurrentAnimation = "MoveRight";
+                }
                 _position = _position + new Vector2(MoveSpeed, 0);
                 Facing = PlayerFacing.Right;
             }
 
             if (gamePadState.IsButtonDown(Buttons.DPadLeft) == true)
             {
-                CurrentAnimation = "MoveLeft";
+                if (IsAnimationOverride == false)
+                {
+                    CurrentAnimation = "MoveLeft";
+                }
                 _position = _position + new Vector2(-MoveSpeed, 0);
                 Facing = PlayerFacing.Left;
             }
@@ -127,6 +153,14 @@ namespace ProjectLondon
             }
         }
 
+        public void Activate()
+        {
+            IsActive = true;
+        }
+        public void Deactivate()
+        {
+            IsActive = false;
+        }
         private void CreateAnimationDictionary()
         {
             Animations = new Dictionary<string, Animation>();
@@ -136,10 +170,43 @@ namespace ProjectLondon
             Animations.Add("MoveLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 160)));
             Animations.Add("MoveRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 160)));
 
+            Animations.Add("SwordDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 176)));
+            Animations.Add("SwordUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 176)));
+            Animations.Add("SwordRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 176)));
+            Animations.Add("SwordLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 176)));
+
+            Animations.Add("PushingDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 192)));
+            Animations.Add("PushingUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 192)));
+            Animations.Add("PushingRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 192)));
+            Animations.Add("PushingLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 192)));
+
+            Animations.Add("PullingDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 208)));
+            Animations.Add("PullingUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 208)));
+            Animations.Add("PullingRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 208)));
+            Animations.Add("PullingLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 208)));
+
+            Animations.Add("CarryDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 224)));
+            Animations.Add("CarryUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 224)));
+            Animations.Add("CarryRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 224)));
+            Animations.Add("CarryLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 224)));
+
             CurrentAnimation = "MoveDown";
 
             AnimationManager = new AnimationManager(Animations[CurrentAnimation]);
             AnimationManager.Play(Animations[CurrentAnimation]);
+
+            
+        }
+        public void AnimationOverride(string animationName)
+        {
+            CurrentAnimation = animationName;
+            AnimationManager.Play(Animations[CurrentAnimation]);
+            AnimationOverrideTimer = 0.1f;
+            IsAnimationOverride = true;
+        }
+        public void ReleaseAnimationOverride()
+        {
+            IsAnimationOverride = false;
         }
         private void UpdateBoundingBoxPosition()
         {
@@ -365,6 +432,10 @@ namespace ProjectLondon
                         break;
                     }
             }
+        }
+        public void LoadGameHandler()
+        {
+            // USE THIS TO LOAD PLAYER FROM A SAVEGAME
         }
     }
 }

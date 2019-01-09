@@ -41,19 +41,28 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssetManager\Animation.cs" />
     <Compile Include="AssetManager\AnimationManager.cs" />
     <Compile Include="AssetManager\AssetManager.cs" />
     <Compile Include="MainGame.cs" />
+    <Compile Include="MainMenu\MainMenuManager.cs" />
+    <Compile Include="MainMenu\MainMenuOption.cs" />
+    <Compile Include="OverworldManager\IMapCollisionObject.cs" />
+    <Compile Include="OverworldManager\IMapObject.cs" />
     <Compile Include="OverworldManager\MapAreaDefinition.cs" />
+    <Compile Include="OverworldManager\MapCollisionSolidStatic.cs" />
     <Compile Include="OverworldManager\MapEntity.cs" />
-    <Compile Include="OverworldManager\MapEntityInteractive.cs" />
+    <Compile Include="OverworldManager\MapEntityStatic.cs" />
     <Compile Include="OverworldManager\MapObject.cs" />
-    <Compile Include="OverworldManager\MapObjectSolid.cs" />
+    <Compile Include="OverworldManager\MapCollisionObject.cs" />
     <Compile Include="OverworldManager\MapTransitionHandler.cs" />
     <Compile Include="OverworldManager\OverworldManager.cs" />
     <Compile Include="PlayerActor.cs" />
+    <Compile Include="PlayerActorItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaveManager\DefaultSaveFile.cs" />
+    <Compile Include="SaveManager\SaveManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Extended, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -80,8 +89,8 @@
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -91,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
+    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
   </ItemGroup>

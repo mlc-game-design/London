@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="63">
  <properties>
-  <property name="mapBackgroundMusic" value="DUNGEON1"/>
+  <property name="mapBackgroundMusic" value="Baba Yaga"/>
  </properties>
  <tileset firstgid="1" name="Dungeons" tilewidth="16" tileheight="16" tilecount="1922" columns="62">
   <image source="../mapTiles/Dungeons.png" width="1000" height="509"/>

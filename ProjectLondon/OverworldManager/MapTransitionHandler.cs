@@ -14,26 +14,26 @@ namespace ProjectLondon
 {
     public class MapTransitionHandler : MapObject
     {
+        /* -- PROPERTIES -- */
+        // Content Management
         private ContentManager Content;
 
+        // Destination Handling
         private string TransitionType { get; set; }
         private TiledMap CurrentMap { get; set; }
         public string DestinationMapName { get; private set; }
         public Vector2 DestinationPosition { get; private set; }
         private Rectangle MapCameraRectangle { get; set; }
-        public Rectangle BoundingBox { get; private set; }
         private Texture2D FadeTexture { get; set; }
         public string DestinationAreaName { get; private set; }
         public string DestinationFacing { get; private set; }
 
+        // Transition Control
         private float Timer { get; set; }
         private float TimerReset { get; set; }
         private float FadeAlpha { get; set; }
         private float TransitionSpeed { get; set; }
         public TransitionState State { get; private set; }
-
-        private SoundEffect TransitionSFX { get; set; }
-
         public enum TransitionState
         {
             Start,
@@ -43,6 +43,10 @@ namespace ProjectLondon
             Complete
         }
 
+        // Additional Resources
+        private SoundEffect TransitionSFX { get; set; }
+
+        /* -- CONSTRUCTOR -- */
         public MapTransitionHandler(ContentManager content, string destinationMapName, Vector2 destinationPosition, 
             Rectangle boundingBox, string destinationAreaName, string destinationFacing)
         {
@@ -62,6 +66,7 @@ namespace ProjectLondon
             State = TransitionState.Start;
         }
 
+        /* -- METHODS -- */
         public void InitializeTransition(TiledMap currentMap, Rectangle mapCameraBoundingbox, SoundEffect transitionSFX, GraphicsDevice graphics)
         {
             CurrentMap = currentMap;
@@ -70,13 +75,11 @@ namespace ProjectLondon
             FadeTexture = Content.Load<Texture2D>("SinglePixel");
             State = TransitionState.Start;
         }
-
         public void MapChangeComplete(Rectangle mapNewRectangle)
         {
             State = TransitionState.FadeIn;
             MapCameraRectangle = mapNewRectangle;
         }
-
         public void Update(GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -132,7 +135,6 @@ namespace ProjectLondon
                     }
             }
         }
-
         public void Draw (SpriteBatch spriteBatch)
         {
             if(State == TransitionState.FadeIn)
