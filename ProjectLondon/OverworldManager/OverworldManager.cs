@@ -92,9 +92,10 @@ namespace ProjectLondon
         }
 
         /// <summary>
-        /// Loads TiledMap into memory by MapName string
+        /// Loads TiledMap into memory by mapName string, Analyzes TiledMap object layers, instantiates 
+        /// all objects into memory, sets Background Music
         /// </summary>
-        /// <param name="mapName"></param>
+        /// <param name="mapName">Asset Name from ContentPipeline</param>
         public void LoadMap(string mapName)
         {
             MapCurrent = contentManager.Load<TiledMap>(mapName);
@@ -102,7 +103,6 @@ namespace ProjectLondon
 
             if (MapCurrent.Properties.ContainsKey("startZone") == true)
             {
-                ActiveAreaName = MapCurrent.Properties["startZone"];
                 SetAreaBoundaries(MapCurrent.Properties["startZone"]);
             }
 
@@ -126,7 +126,8 @@ namespace ProjectLondon
             MapBackgroundMusicAssetName = MapCurrent.Properties["mapBackgroundMusic"];
         }
         /// <summary>
-        /// Loads MapObjects for the Active Map
+        /// Loads MapObjects for the Active Map, iterates through them, and instantiates objects
+        /// based on the information found in the Map ObjectLayers
         /// </summary>
         private void LoadMapObjectLayers()
         {
@@ -200,6 +201,10 @@ namespace ProjectLondon
                 Areas.Add(area);
             }
         }
+        /// <summary>
+        /// Configures the Area's Defined Total space, as well as MapCamera operating restriction space
+        /// </summary>
+        /// <param name="mapAreaName">Reference name for Area being used to set the boundaries</param>
         private void SetAreaBoundaries(string mapAreaName)
         {
             MapAreaDefinition _currentArea = null;
@@ -222,6 +227,10 @@ namespace ProjectLondon
                 ActiveArea = new Rectangle((int)_currentArea.BoundingBox.X, (int)_currentArea.BoundingBox.Y, (int)_currentArea.BoundingBox.Width, (int)_currentArea.BoundingBox.Height);
             }
         }
+        /// <summary>
+        /// Pulls camera back inside the defined boundary if it strays outside the space
+        /// </summary>
+        /// <param name="sceneBoundary">The Rectangle in which the camera is allowed to operate</param>
         private void UpdateCameraPosition(Rectangle sceneBoundary)
         {
             Vector2 _cameraMovePosition = new Vector2(0);
@@ -253,6 +262,11 @@ namespace ProjectLondon
 
             MapCamera.Position = MapCamera.Position + _cameraMovePosition;
         }
+        /// <summary>
+        /// Slides the Camera between two Areas during transitions
+        /// </summary>
+        /// <param name="moveState">The MoveState of the MainPlayer, used to determine which way the camera should move</param>
+        /// <param name="gameTime">Elapsed Gametime used to move the camera at a steady pace</param>
         private void AreaTransitionCameraUpdate(PlayerActor.AreaTransitionMoveState moveState, GameTime gameTime)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -298,6 +312,11 @@ namespace ProjectLondon
                     }
             }
         }
+        /// <summary>
+        /// Clears the Current map's Lists from memory, Loads New TiledMap into memory,
+        /// positions and faces the Player accordingly, snaps the MapCamera into place,
+        /// then signals the MapTransition object to continue it's transition
+        /// </summary>
         private void UnloadMap()
         {
             MapObjects.Clear();
@@ -316,6 +335,11 @@ namespace ProjectLondon
 
             MapTransition.MapChangeComplete((Rectangle)MapCamera.BoundingRectangle);
         }
+        /// <summary>
+        /// Iterates through the current Map's lists and checks their BoundingBox's against
+        /// the MainPlayer's to determine if a Collision has occurred. Begins or handles
+        /// collision processes as they occur.
+        /// </summary>
         public void HandleCollisions()
         {
             foreach (MapAreaDefinition _area in Areas)
@@ -336,7 +360,7 @@ namespace ProjectLondon
             }
             foreach (MapCollisionSolidStatic _collisionObject in CollisionObjects)
             {
-                if (MainPlayer.BoundingBox.Intersects(_collisionObject.BoundingBox))
+                if (MainPlayer.SolidBoundingBox.Intersects(_collisionObject.BoundingBox))
                 {
                     switch (_collisionObject.Type)
                     {
@@ -344,43 +368,8 @@ namespace ProjectLondon
                             {
                                 Rectangle collisionRectangle = Rectangle.Intersect(MainPlayer.SolidBoundingBox, _collisionObject.BoundingBox);
 
-                                switch (MainPlayer.Facing)
-                                {
-                                    case PlayerActor.PlayerFacing.Down:
-                                        {
-                                            if(collisionRectangle.Top < MainPlayer.SolidBoundingBox.Bottom)
-                                            {
-                                                MainPlayer.AnimationOverride("PushingDown");
-                                            }
-                                            break;
-                                        }
-                                    case PlayerActor.PlayerFacing.Up:
-                                        {
-                                            if (collisionRectangle.Top > MainPlayer.SolidBoundingBox.Bottom)
-                                            {
-                                                MainPlayer.AnimationOverride("PushingUp");
-                                            }
-                                            break;
-                                        }
-                                    case PlayerActor.PlayerFacing.Right:
-                                        {
-                                            if (collisionRectangle.Right > MainPlayer.SolidBoundingBox.Left)
-                                            {
-                                                MainPlayer.AnimationOverride("PushingRight");
-                                            }
-                                            break;
-                                        }
-                                    case PlayerActor.PlayerFacing.Left:
-                                        {
-                                            if (collisionRectangle.Left < MainPlayer.SolidBoundingBox.Right)
-                                            {
-                                                MainPlayer.AnimationOverride("PushingLeft");
-                                            }
-                                            break;
-                                        }
-                                }
+                                MainPlayer.HasCollided(collisionRectangle);
 
-                                MainPlayer.Uncollide(collisionRectangle);
                                 break;
                             }
                         case "MapCollisionWater":
@@ -406,7 +395,7 @@ namespace ProjectLondon
                     {
                         MapTransition = transitionObject;
                         transitionObject.InitializeTransition(MapCurrent, (Rectangle)MapCamera.BoundingRectangle,
-                            TransitionSound, graphicsDevice);
+                            TransitionSound);
                         IsTransitionActive = true;
                     }
                 }

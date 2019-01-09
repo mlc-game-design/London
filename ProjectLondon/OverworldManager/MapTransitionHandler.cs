@@ -67,7 +67,14 @@ namespace ProjectLondon
         }
 
         /* -- METHODS -- */
-        public void InitializeTransition(TiledMap currentMap, Rectangle mapCameraBoundingbox, SoundEffect transitionSFX, GraphicsDevice graphics)
+        /// <summary>
+        /// Starts a Map Transition with the information provided
+        /// </summary>
+        /// <param name="currentMap">The Map currently loaded into memory</param>
+        /// <param name="mapCameraBoundingbox">The MapCamera's current viewing area</param>
+        /// <param name="transitionSFX">The SoundEffect to play at the time of Transition</param>
+        /// <param name="graphics"></param>
+        public void InitializeTransition(TiledMap currentMap, Rectangle mapCameraBoundingbox, SoundEffect transitionSFX)
         {
             CurrentMap = currentMap;
             MapCameraRectangle = mapCameraBoundingbox;

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
@@ -21,10 +18,12 @@ namespace ProjectLondon
         private float MoveSpeed { get; set; }
         public Vector2 Position { get; private set; }
         public Vector2 OriginPoint { get; private set; }
-        public Vector2 TransformPosition { get; private set; }
+        private Vector2 TransformPosition { get; set; }
+        private bool IsColliding { get; set; }
 
         public Rectangle BoundingBox { get; protected set; }
         public Rectangle SolidBoundingBox { get; protected set; }
+        List<Rectangle> CollisionBoxes { get; set; }
 
         public float Health { get; protected set; }
         private float HealthMax { get; set; }
@@ -33,9 +32,9 @@ namespace ProjectLondon
         AnimationManager AnimationManager { get; set; }
         public bool IsAnimationOverride { get; protected set; }
         private float AnimationOverrideTimer { get; set; }
-
         private Dictionary<string, Animation> Animations;
         private string CurrentAnimation;
+        private bool IsAnimated { get; set; }
 
         private bool IsVisible { get; set; }
 
@@ -75,7 +74,8 @@ namespace ProjectLondon
             {
                 ControlStyle = PlayerController.Gamepad;
             }
-            else{
+            else
+            {
                 ControlStyle = PlayerController.Keyboard;
             }
 
@@ -84,6 +84,7 @@ namespace ProjectLondon
             MoveSpeed = 1.0f;
             Position = position;
             OriginPoint = Position + new Vector2(8, 8);
+            IsColliding = false;
 
             HealthMax = healthMax;
             Health = HealthMax;
@@ -93,73 +94,145 @@ namespace ProjectLondon
 
             CreateAnimationDictionary();
             UpdateBoundingBoxPosition();
+            CollisionBoxes = new List<Rectangle>();
 
             TransitionMoveState = AreaTransitionMoveState.Start;
             Facing = PlayerFacing.Down;
+            IsAnimated = false;
         }
 
         public void Update(GameTime gameTime)
         {
-            float _deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if(AnimationOverrideTimer <= 0 && IsAnimationOverride == true)
-            {
-                ReleaseAnimationOverride();
-            }
-            else
-            {
-                AnimationOverrideTimer -= _deltaTime;
-            }
-
             HandleInput();
             Vector2 _position = new Vector2(0);
 
             if (ControlKeys["UpKey"] == true)
             {
-                if (IsAnimationOverride == false)
+                if(IsAnimated == false)
+                {
+                    IsAnimated = true;
+                }
+
+                if (IsColliding == true && IsCollisionAbove(SolidBoundingBox.Bottom) == true)
+                {
+                    CurrentAnimation = "PushingUp";
+                }
+                else
                 {
                     CurrentAnimation = "MoveUp";
                 }
                 _position = _position + new Vector2(0, -MoveSpeed);
                 Facing = PlayerFacing.Up;
             }
-
             if (ControlKeys["DownKey"] == true)
             {
-                if (IsAnimationOverride == false)
+                if (IsAnimated == false)
+                {
+                    IsAnimated = true;
+                }
+
+                if (IsColliding == true && IsCollisionLeft(SolidBoundingBox.Top) == true)
+                {
+                    CurrentAnimation = "PushingDown";
+                }
+                else
                 {
                     CurrentAnimation = "MoveDown";
                 }
                 _position = _position + new Vector2(0, MoveSpeed);
                 Facing = PlayerFacing.Down;
             }
-
             if (ControlKeys["RightKey"] == true)
             {
-                if (IsAnimationOverride == false)
+                if (IsAnimated == false)
+                {
+                    IsAnimated = true;
+                }
+
+                if (IsColliding == true && IsCollisionRight(SolidBoundingBox.Left) == true)
+                {
+                    CurrentAnimation = "PushingRight";
+                }
+                else
                 {
                     CurrentAnimation = "MoveRight";
                 }
                 _position = _position + new Vector2(MoveSpeed, 0);
                 Facing = PlayerFacing.Right;
             }
-
             if (ControlKeys["LeftKey"] == true)
             {
-                if (IsAnimationOverride == false)
+                if (IsAnimated == false)
+                {
+                    IsAnimated = true;
+                }
+
+                if (IsColliding == true && IsCollisionLeft(SolidBoundingBox.Right) == true)
+                {
+                    CurrentAnimation = "PushingLeft";
+                }
+                else
                 {
                     CurrentAnimation = "MoveLeft";
                 }
                 _position = _position + new Vector2(-MoveSpeed, 0);
                 Facing = PlayerFacing.Left;
             }
+            if (ControlKeys["NoMoveKeys"] == true)
+            {
+                IsAnimated = false;
+
+                switch (Facing)
+                {
+                    case PlayerFacing.Down:
+                        {
+                            CurrentAnimation = "MoveDown";
+                            break;
+                        }
+                    case PlayerFacing.Up:
+                        {
+                            CurrentAnimation = "MoveUp";
+                            break;
+                        }
+                    case PlayerFacing.Left:
+                        {
+                            CurrentAnimation = "MoveLeft";
+                            break;
+                        }
+                    case PlayerFacing.Right:
+                        {
+                            CurrentAnimation = "MoveRight";
+                            break;
+                        }
+                }
+
+                AnimationManager.Play(Animations[CurrentAnimation]);
+            }
+
+            if (IsColliding == true)
+            {
+                foreach(Rectangle _collision in CollisionBoxes)
+                {
+                    Uncollide(_collision);
+                }
+
+                for(int i = CollisionBoxes.Count - 1; i >= 0; i--)
+                {
+                    CollisionBoxes.RemoveAt(i);
+                }
+                
+                IsColliding = false;
+            }
 
             Position = Position + _position;
             OriginPoint = Position + new Vector2(8, 8);
             UpdateBoundingBoxPosition();
 
-            AnimationManager.Play(Animations[CurrentAnimation]);
-            AnimationManager.Update(gameTime);
+            if(IsAnimated == true)
+            {
+                AnimationManager.Play(Animations[CurrentAnimation]);
+                AnimationManager.Update(gameTime);
+            }
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -179,6 +252,7 @@ namespace ProjectLondon
             ControlKeys.Add("LeftKey", false);
             ControlKeys.Add("AttackKey", false);
             ControlKeys.Add("StartKey", false);
+            ControlKeys.Add("NoMoveKeys", true);
         }
         public void HandleInput()
         {
@@ -191,6 +265,7 @@ namespace ProjectLondon
                         if (_keystate.IsKeyDown(Keys.Up) == true)
                         {
                             ControlKeys["UpKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -200,6 +275,7 @@ namespace ProjectLondon
                         if (_keystate.IsKeyDown(Keys.Down) == true)
                         {
                             ControlKeys["DownKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -209,6 +285,7 @@ namespace ProjectLondon
                         if (_keystate.IsKeyDown(Keys.Right) == true)
                         {
                             ControlKeys["RightKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -218,6 +295,7 @@ namespace ProjectLondon
                         if (_keystate.IsKeyDown(Keys.Left) == true)
                         {
                             ControlKeys["LeftKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -232,6 +310,7 @@ namespace ProjectLondon
                         if (gamePadState.IsButtonDown(Buttons.DPadUp) == true)
                         {
                             ControlKeys["UpKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -241,6 +320,7 @@ namespace ProjectLondon
                         if (gamePadState.IsButtonDown(Buttons.DPadDown) == true)
                         {
                             ControlKeys["DownKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -250,6 +330,7 @@ namespace ProjectLondon
                         if (gamePadState.IsButtonDown(Buttons.DPadRight) == true)
                         {
                             ControlKeys["RightKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -259,6 +340,7 @@ namespace ProjectLondon
                         if (gamePadState.IsButtonDown(Buttons.DPadLeft) == true)
                         {
                             ControlKeys["LeftKey"] = true;
+                            ControlKeys["NoMoveKeys"] = false;
                         }
                         else
                         {
@@ -266,6 +348,12 @@ namespace ProjectLondon
                         }
                         break;
                     }
+            }
+
+            if (ControlKeys["LeftKey"] == false && ControlKeys["RightKey"] == false &&
+                            ControlKeys["UpKey"] == false && ControlKeys["DownKey"] == false)
+            {
+                ControlKeys["NoMoveKeys"] = true;
             }
         }
 
@@ -334,6 +422,67 @@ namespace ProjectLondon
         {
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, 15, 16);
             SolidBoundingBox = new Rectangle((int)Position.X, (int)Position.Y + 8, 15, 8);
+        }
+        private bool IsCollisionAbove(int y)
+        {
+            bool _answer = false;
+
+            foreach(Rectangle _collision in CollisionBoxes)
+            {
+                if(_collision.Bottom < y)
+                {
+                    _answer = true;
+                }
+            }
+
+            return _answer;
+        }
+        private bool IsCollisionBelow(int y)
+        {
+            bool _answer = false;
+
+            foreach (Rectangle _collision in CollisionBoxes)
+            {
+                if (_collision.Top > y)
+                {
+                    _answer = true;
+                }
+            }
+
+            return _answer;
+        }
+        private bool IsCollisionLeft(int x)
+        {
+            bool _answer = false;
+
+            foreach (Rectangle _collision in CollisionBoxes)
+            {
+                if (_collision.Right < x)
+                {
+                    _answer = true;
+                }
+            }
+
+            return _answer;
+        }
+        private bool IsCollisionRight(int x)
+        {
+            bool _answer = false;
+
+            foreach (Rectangle _collision in CollisionBoxes)
+            {
+                if (_collision.Left > x)
+                {
+                    _answer = true;
+                }
+            }
+
+            return _answer;
+        }
+        public void HasCollided(Rectangle collisionRectangle)
+        {
+            IsColliding = true;
+            CollisionBoxes.Add(collisionRectangle);
         }
         public void Uncollide(Rectangle collisionRectangle)
         {
@@ -552,6 +701,8 @@ namespace ProjectLondon
                         break;
                     }
             }
+
+            AnimationManager.Play(Animations[CurrentAnimation]);
         }
         public void LoadGameHandler()
         {
