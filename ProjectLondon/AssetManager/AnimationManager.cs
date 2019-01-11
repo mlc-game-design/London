@@ -55,5 +55,13 @@ namespace ProjectLondon
                 (int)Animation.FrameStartPosition.Y, Animation.FrameWidth, Animation.FrameHeight),
                 Color.White);
         }
+
+        public void Draw(SpriteBatch spriteBatch, Rectangle rectangle)
+        {
+            spriteBatch.Draw(Animation.Texture, rectangle,
+                new Rectangle((int)Animation.FrameStartPosition.X + (Animation.CurrentFrame * Animation.FrameWidth),
+                (int)Animation.FrameStartPosition.Y, Animation.FrameWidth, Animation.FrameHeight),
+                Color.White);
+        }
     }
 }

@@ -13,6 +13,9 @@ namespace ProjectLondon
 {
     public class MainMenuManager
     {
+        private ContentManager Content { get; set; }
+        private Animation TitleScreenAnimation { get; set; }
+        private AnimationManager AnimationManager { get; set; }
         private Song MainMenuSong { get; set; }
         private Vector2 PressStartTextPosition { get; set; }
         private Vector2 TitleTextPosition { get; set; }
@@ -33,18 +36,23 @@ namespace ProjectLondon
 
         public MainMenuManager(ContentManager content)
         {
+            Content = content;
             State = MainMenuState.Title;
             SelectedMenuOption = 0;
             InputTimer = 0f;
             PressStartTimer = 1.0f;
             PressStartVisible = true;
-            MainMenuBackground = content.Load<Texture2D>("textures//mainMenu//MainMenuBackBeta01");
-            PressStartFont = content.Load<SpriteFont>("spritefonts//MainMenuFont");
-            MainMenuSong = content.Load<Song>("bgm/Brittle Rille");
+            MainMenuBackground = Content.Load<Texture2D>("textures//mainMenu//MainMenuBackBeta01");
+            PressStartFont = Content.Load<SpriteFont>("spritefonts//MainMenuFont");
+            MainMenuSong = Content.Load<Song>("bgm/Brittle Rille");
+            TitleScreenAnimation = new Animation(Content.Load<Texture2D>("textures/mainMenu/TitleScreenGif"), 8, 692, 500, 0.2f);
             PressStartTextPosition = new Vector2(320, 544);
             TitleTextPosition = new Vector2(320, 96);
             PressStartTextPosition = AdjustPosition(PressStartFont, PressStartTextPosition, "press start!");
             TitleTextPosition = AdjustPosition(PressStartFont, TitleTextPosition, "Project London");
+
+            AnimationManager = new AnimationManager(TitleScreenAnimation);
+            AnimationManager.Play(TitleScreenAnimation);
 
             MediaPlayer.Volume = 0.5f;
             MediaPlayer.IsRepeating = true;
@@ -109,10 +117,13 @@ namespace ProjectLondon
             {
                 State = MainMenuState.Complete;
             }
+
+            AnimationManager.Update(gameTime);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(MainMenuBackground, new Rectangle(0, 0, 640, 640), Color.White);
+            //spriteBatch.Draw(MainMenuBackground, new Rectangle(0, 0, 640, 640), Color.White);
+            AnimationManager.Draw(spriteBatch, new Rectangle(0,0,640,640));
             DrawText(spriteBatch, PressStartFont, "Project London", Color.Black, Color.Yellow, 1.0f, TitleTextPosition);
 
             if (PressStartVisible == true)
