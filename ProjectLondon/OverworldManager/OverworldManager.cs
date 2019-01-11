@@ -131,9 +131,9 @@ namespace ProjectLondon
         /// </summary>
         private void LoadMapObjectLayers()
         {
-            TiledMapObjectLayer _mapEntityObjectLayer = (TiledMapObjectLayer)MapCurrent.GetLayer("Entity Layer");
-            TiledMapObjectLayer _mapCollisionLayer = (TiledMapObjectLayer)MapCurrent.GetLayer("Collision Layer");
-            TiledMapObjectLayer _mapAreaDefinitionLayer = (TiledMapObjectLayer)MapCurrent.GetLayer("Area Definitions");
+            TiledMapObjectLayer _mapEntityObjectLayer = MapCurrent.GetLayer<TiledMapObjectLayer>("Entity Layer");
+            TiledMapObjectLayer _mapCollisionLayer = MapCurrent.GetLayer<TiledMapObjectLayer>("Collision Layer");
+            TiledMapObjectLayer _mapAreaDefinitionLayer = MapCurrent.GetLayer<TiledMapObjectLayer>("Area Definitions");
 
             foreach (TiledMapObject _entityObject in _mapEntityObjectLayer.Objects)
             {
@@ -166,17 +166,12 @@ namespace ProjectLondon
                     case "mapEntitySpawn":
                         {
                             // Spawn the Entity
-                            bool isSolid = false;
+                            bool isSolid = Convert.ToBoolean(_entityObject.Properties["isSolid"]);
 
-                            if(_entityObject.Properties["isSolid"] == "true")
-                            {
-                                isSolid = true;
-                            }
+                            MapEntityStatic _mapEntity = new MapEntityStatic(isSolid, new Vector2(_entityObject.Position.X, _entityObject.Position.Y), (int)_entityObject.Size.Width, (int)_entityObject.Size.Height);
+                            _mapEntity.CreateAnimationDictionary(AssetManager.AnimationLibraries[_entityObject.Properties["animationSetName"]], _entityObject.Properties["currentAnimation"]);
 
-                            MapEntityStatic mapEntity = new MapEntityStatic(isSolid, new Vector2(_entityObject.Position.X, _entityObject.Position.Y), (int)_entityObject.Size.Width, (int)_entityObject.Size.Height);
-                            mapEntity.CreateAnimationDictionary(AssetManager.AnimationLibraries[_entityObject.Properties["animationSetName"]], _entityObject.Properties["currentAnimation"]);
-
-                            Entities.Add(mapEntity);
+                            Entities.Add(_mapEntity);
                             break;
                         }
                 }
@@ -431,9 +426,9 @@ namespace ProjectLondon
                 UpdateCameraPosition(ActiveArea);
                 HandleCollisions();
 
-                foreach (MapEntity _mapEntity in Entities)
+                for(int i = 0; i <= Entities.Count() - 1; i++)
                 {
-                    _mapEntity.Update(gameTime);
+                    Entities.ElementAt(i).Update(gameTime);
                 }
                 
             }

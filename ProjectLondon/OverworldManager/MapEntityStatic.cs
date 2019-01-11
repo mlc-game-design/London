@@ -29,11 +29,12 @@ namespace ProjectLondon
 
         public void CreateAnimationDictionary(Dictionary<string, Animation> animations, string currentAnimation)
         {
-            Animations = new Dictionary<string, Animation>(animations);
+            Animations = animations.ToDictionary(kv => kv.Key, kv => kv.Value.Clone() as Animation);
 
             CurrentAnimation = currentAnimation;
 
             AnimationManager = new AnimationManager(Animations[CurrentAnimation]);
+            AnimationManager.Play(Animations[CurrentAnimation]);
         }
 
         public override void Update(GameTime gameTime)

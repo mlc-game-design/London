@@ -41,15 +41,10 @@ namespace ProjectLondon
         {
             FrameTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if(FrameTimer > Animation.FrameSpeed)
+            if(FrameTimer >= Animation.FrameSpeed)
             {
                 FrameTimer = 0f;
-                Animation.CurrentFrame++;
-
-                if(Animation.CurrentFrame >= Animation.FrameCount)
-                {
-                    Animation.CurrentFrame = 0;
-                }
+                Animation.GotoNextFrame();
             }
         }
 

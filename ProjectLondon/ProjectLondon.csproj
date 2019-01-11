@@ -52,6 +52,8 @@
     <Compile Include="OverworldManager\MapAreaDefinition.cs" />
     <Compile Include="OverworldManager\MapCollisionSolidStatic.cs" />
     <Compile Include="OverworldManager\MapEntity.cs" />
+    <Compile Include="OverworldManager\MapEntityInteractive.cs" />
+    <Compile Include="OverworldManager\MapEntityInteractiveChest.cs" />
     <Compile Include="OverworldManager\MapEntityStatic.cs" />
     <Compile Include="OverworldManager\MapObject.cs" />
     <Compile Include="OverworldManager\MapCollisionObject.cs" />

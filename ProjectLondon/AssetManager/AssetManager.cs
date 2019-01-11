@@ -14,7 +14,7 @@ namespace ProjectLondon
     public static class AssetManager
     {
         public static readonly Dictionary<string, Texture2D> SpriteSheets = new Dictionary<string, Texture2D>();
-        public static readonly Dictionary<string, bool> MapSwitches = new Dictionary<string, bool>();
+        public static readonly Dictionary<string, bool> MapEntitySwitches = new Dictionary<string, bool>();
         public static readonly Dictionary<string, Dictionary<string, Animation>> AnimationLibraries = new Dictionary<string, Dictionary<string, Animation>>();
 
         public static void PopulateLists(ContentManager content)
@@ -37,6 +37,7 @@ namespace ProjectLondon
         public static void CreateBaseDictionaries()
         {
             BuildEntityAnimationDictionaries();
+            BuildMapEntitySwitchDictionary();
         }
 
         private static void BuildEntityAnimationDictionaries()
@@ -45,6 +46,11 @@ namespace ProjectLondon
             dungeonTorch.Add("Idle", new Animation(SpriteSheets["Dungeons"], 4, 16, 16, 0.2f, new Vector2(0, 16)));
 
             AnimationLibraries.Add("DungeonTorch", dungeonTorch);
+        }
+
+        private static void BuildMapEntitySwitchDictionary()
+        {
+            MapEntitySwitches.Add("TestDungeon001", false);
         }
     }
 }

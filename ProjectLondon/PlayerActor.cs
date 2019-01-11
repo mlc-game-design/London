@@ -12,7 +12,7 @@ namespace ProjectLondon
     {
         private ContentManager Content { get; set; }
         private PlayerIndex ControllerIndex { get; set; }
-        private Dictionary<string, bool> ControlKeys { get; set; }
+        public Dictionary<string, bool> ControlKeys { get; protected set; }
         public bool IsActive { get; protected set; }
 
         private float MoveSpeed { get; set; }
@@ -241,7 +241,9 @@ namespace ProjectLondon
                 AnimationManager.Draw(spriteBatch, Position);
             }
         }
-
+        /// <summary>
+        /// Creates input Dictionary used to hold keypress booleans
+        /// </summary>
         private void CreateControlConfiguration()
         {
             ControlKeys = new Dictionary<string, bool>();
@@ -250,10 +252,14 @@ namespace ProjectLondon
             ControlKeys.Add("DownKey", false);
             ControlKeys.Add("RightKey", false);
             ControlKeys.Add("LeftKey", false);
-            ControlKeys.Add("AttackKey", false);
+            ControlKeys.Add("A_Key", false);
+            ControlKeys.Add("B_Key", false);
             ControlKeys.Add("StartKey", false);
             ControlKeys.Add("NoMoveKeys", true);
         }
+        /// <summary>
+        /// Process Gamepad (if connected) or Keyboard input. Assigns booleans to ControlKeys[] dictionary
+        /// </summary>
         public void HandleInput()
         {
             switch (ControlStyle)
@@ -369,7 +375,9 @@ namespace ProjectLondon
         {
             IsVisible = visible;
         }
-
+        /// <summary>
+        /// Creates Dictionary for all Animations available to MainPlayer
+        /// </summary>
         private void CreateAnimationDictionary()
         {
             Animations = new Dictionary<string, Animation>();
@@ -417,12 +425,19 @@ namespace ProjectLondon
         {
             IsAnimationOverride = false;
         }
-
+        /// <summary>
+        /// Repositions collions rectangles for MainPlayer based on Position
+        /// </summary>
         private void UpdateBoundingBoxPosition()
         {
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, 15, 16);
             SolidBoundingBox = new Rectangle((int)Position.X, (int)Position.Y + 8, 15, 8);
         }
+        /// <summary>
+        /// Checks CollisionBoxes list for any collisions that are occuring above the provided Y coordinate
+        /// </summary>
+        /// <param name="y">Point on the Y-axis to test against collisions</param>
+        /// <returns>Returns true if any one collision is above the provided Y-value</returns>
         private bool IsCollisionAbove(int y)
         {
             bool _answer = false;
@@ -437,6 +452,11 @@ namespace ProjectLondon
 
             return _answer;
         }
+        /// <summary>
+        /// Checks CollisionBoxes list for any collisions that are occuring below the provided Y coordinate
+        /// </summary>
+        /// <param name="y">Point on the Y-axis to test against collisions</param>
+        /// <returns>Returns true if any one collision is below the provided Y-value</returns>
         private bool IsCollisionBelow(int y)
         {
             bool _answer = false;
@@ -451,6 +471,11 @@ namespace ProjectLondon
 
             return _answer;
         }
+        /// <summary>
+        /// Checks CollisionBoxes list for any collisions that are occuring to the left of the provided X coordinate
+        /// </summary>
+        /// <param name="x">Point on the X-axis to test against collisions</param>
+        /// <returns>Returns true if any one collision is to the left of the provided X-value</returns>
         private bool IsCollisionLeft(int x)
         {
             bool _answer = false;
@@ -465,6 +490,11 @@ namespace ProjectLondon
 
             return _answer;
         }
+        /// <summary>
+        /// Checks CollisionBoxes list for any collisions that are occuring to the right of the provided X coordinate
+        /// </summary>
+        /// <param name="x">Point on the X-axis to test against collisions</param>
+        /// <returns>Returns true if any one collision is to the right of the provided X-value</returns>
         private bool IsCollisionRight(int x)
         {
             bool _answer = false;
@@ -479,11 +509,21 @@ namespace ProjectLondon
 
             return _answer;
         }
+        /// <summary>
+        /// Triggers Collision resolution for PlayerActor's Update() method, and adds Rectangle for
+        /// handling to the CollisionBoxes list
+        /// </summary>
+        /// <param name="collisionRectangle">Rectangle specifying the exact space of intersecting BoundingBoxes</param>
         public void HasCollided(Rectangle collisionRectangle)
         {
             IsColliding = true;
             CollisionBoxes.Add(collisionRectangle);
         }
+        /// <summary>
+        /// Repositions the PlayerActor away from the specified collision rectangle using
+        /// the shortest length available (width vs height)
+        /// </summary>
+        /// <param name="collisionRectangle">Rectangle specifying the exact space of intersecting BoundingBoxes</param>
         public void Uncollide(Rectangle collisionRectangle)
         {
             Vector2 movePosition = new Vector2(0,0);

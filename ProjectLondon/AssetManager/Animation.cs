@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ProjectLondon
 {
-    public class Animation
+    public class Animation : ICloneable
     {
         #region Properties
         public int CurrentFrame { get; set; }
@@ -43,6 +43,22 @@ namespace ProjectLondon
             IsLooping = true;
             FrameSpeed = frameSpeed;
             FrameStartPosition = frameStartPosition;
+        }
+
+        public void GotoNextFrame()
+        {
+            CurrentFrame = CurrentFrame + 1;
+
+            if (CurrentFrame >= FrameCount)
+            {
+                CurrentFrame = 0;
+            }
+        }
+
+        
+        public object Clone()
+        {
+            return new Animation(Texture, FrameCount, FrameHeight, FrameWidth, FrameSpeed, FrameStartPosition);
         }
     }
 }
