@@ -15,7 +15,7 @@ namespace ProjectLondon
     {
         public static readonly Dictionary<string, Texture2D> SpriteSheets = new Dictionary<string, Texture2D>();
         public static readonly Dictionary<string, bool> MapEntitySwitches = new Dictionary<string, bool>();
-        public static readonly Dictionary<string, Dictionary<string, Animation>> AnimationLibraries = new Dictionary<string, Dictionary<string, Animation>>();
+        public static readonly List<AnimationLibrary> AnimationLibraries = new List<AnimationLibrary>();
 
         public static void PopulateLists(ContentManager content)
         {
@@ -42,15 +42,29 @@ namespace ProjectLondon
 
         private static void BuildEntityAnimationDictionaries()
         {
-            Dictionary<string, Animation> dungeonTorch = new Dictionary<string, Animation>();
-            dungeonTorch.Add("Idle", new Animation(SpriteSheets["Dungeons"], 4, 16, 16, 0.2f, new Vector2(0, 16)));
+            Dictionary<string, Animation> _dungeonTorchAnimations = new Dictionary<string, Animation>();
+            _dungeonTorchAnimations.Add("Idle", new Animation(SpriteSheets["Dungeons"], 4, 16, 16, 0.2f, new Vector2(0, 16)));
 
-            AnimationLibraries.Add("DungeonTorch", dungeonTorch);
+            AnimationLibrary _dungeonTorchLibrary = new AnimationLibrary("DungeonTorch", _dungeonTorchAnimations);
+
+            AnimationLibraries.Add(_dungeonTorchLibrary);
         }
-
         private static void BuildMapEntitySwitchDictionary()
         {
             MapEntitySwitches.Add("TestDungeon001", false);
+        }
+
+        public static AnimationLibrary GetAnimationLibrary(string libraryName)
+        {
+            foreach (AnimationLibrary al in AnimationLibraries)
+            {
+                if(al.Name == libraryName)
+                {
+                    return al;
+                }
+            }
+
+            return null;
         }
     }
 }

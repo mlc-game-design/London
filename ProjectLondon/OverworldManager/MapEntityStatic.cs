@@ -13,13 +13,13 @@ namespace ProjectLondon
     public class MapEntityStatic : MapEntity
     {
         private AnimationManager AnimationManager { get; set; }
-        private Dictionary<string, Animation> Animations { get; set; }
+        private AnimationLibrary AnimationLibrary { get; set; }
         private string CurrentAnimation { get; set; }
 
-        public MapEntityStatic(bool isSolid, Vector2 position, int width, int height)
+        public MapEntityStatic(bool isSolid, Vector2 position, int width, int height, string animationLibraryName)
         {
             IsSolid = isSolid;
-            Animations = new Dictionary<string, Animation>();
+            AnimationLibrary = new AnimationLibrary(animationLibraryName);
             AnimationManager = null;
 
             Position = position;
@@ -27,14 +27,14 @@ namespace ProjectLondon
             BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, width, height);
         }
 
-        public void CreateAnimationDictionary(Dictionary<string, Animation> animations, string currentAnimation)
+        public void ConstructAnimationLibrary(string name, string currentAnimation)
         {
-            Animations = animations.ToDictionary(kv => kv.Key, kv => kv.Value.Clone() as Animation);
+            AnimationLibrary = new AnimationLibrary(name, AssetManager.GetAnimationLibrary(name).Animations);
 
             CurrentAnimation = currentAnimation;
 
-            AnimationManager = new AnimationManager(Animations[CurrentAnimation]);
-            AnimationManager.Play(Animations[CurrentAnimation]);
+            AnimationManager = new AnimationManager(AnimationLibrary);
+            AnimationManager.Play(CurrentAnimation);
         }
 
         public override void Update(GameTime gameTime)

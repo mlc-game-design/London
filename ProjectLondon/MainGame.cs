@@ -98,9 +98,9 @@ namespace ProjectLondon
                             MainPlayer = new PlayerActor(Content, new Vector2(0), 6);
                             OverworldManager = new OverworldManager(GraphicsDevice, Content, MainPlayer);
                             OverworldManager.LoadMap("maps/mapZoneTest2");
+                            MainPlayer.Activate();
                             OverworldManager.Activate();
                             MainPlayer.SetPosition(new Vector2(OverworldManager.PlayerSpawnX, OverworldManager.PlayerSpawnY));
-                            MainPlayer.Activate();
                             State = MainGameState.NormalPlay;
                         }
                         

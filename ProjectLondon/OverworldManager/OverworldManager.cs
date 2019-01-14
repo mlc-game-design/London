@@ -88,6 +88,8 @@ namespace ProjectLondon
 
             IsPlayerSpawn = false;
 
+            MainPlayer.PositionChanged += HandleCollisions;
+
             DebugTexture = content.Load<Texture2D>("SinglePixel");
         }
 
@@ -165,11 +167,14 @@ namespace ProjectLondon
                         }
                     case "mapEntitySpawn":
                         {
-                            // Spawn the Entity
-                            bool isSolid = Convert.ToBoolean(_entityObject.Properties["isSolid"]);
+                            // Get AssetManager Data
+                            AnimationLibrary _animationLibrary = AssetManager.GetAnimationLibrary(_entityObject.Properties["AnimationLibraryName"]);
 
-                            MapEntityStatic _mapEntity = new MapEntityStatic(isSolid, new Vector2(_entityObject.Position.X, _entityObject.Position.Y), (int)_entityObject.Size.Width, (int)_entityObject.Size.Height);
-                            _mapEntity.CreateAnimationDictionary(AssetManager.AnimationLibraries[_entityObject.Properties["animationSetName"]], _entityObject.Properties["currentAnimation"]);
+                            // Spawn the Entity
+                            bool isSolid = Convert.ToBoolean(_entityObject.Properties["IsSolid"]);
+
+                            MapEntityStatic _mapEntity = new MapEntityStatic(isSolid, new Vector2(_entityObject.Position.X, _entityObject.Position.Y), (int)_entityObject.Size.Width, (int)_entityObject.Size.Height, _entityObject.Properties["AnimationLibraryName"]);
+                            _mapEntity.ConstructAnimationLibrary(_animationLibrary.Name, _entityObject.Properties["CurrentAnimation"]);
 
                             Entities.Add(_mapEntity);
                             break;
@@ -335,7 +340,7 @@ namespace ProjectLondon
         /// the MainPlayer's to determine if a Collision has occurred. Begins or handles
         /// collision processes as they occur.
         /// </summary>
-        public void HandleCollisions()
+        public void HandleCollisions(object sender, EventArgs eventArgs)
         {
             foreach (MapAreaDefinition _area in Areas)
             {
@@ -400,11 +405,10 @@ namespace ProjectLondon
                 if (MainPlayer.BoundingBox.Intersects(_mapEntity.BoundingBox) && _mapEntity.IsSolid == true)
                 {
                     // Run Uncollide Code in Player
-                    Rectangle collisionRectangle = Rectangle.Intersect(MainPlayer.SolidBoundingBox, _mapEntity.BoundingBox);
+                    Rectangle collisionRectangle = Rectangle.Intersect(MainPlayer.BoundingBox, _mapEntity.BoundingBox);
 
-                    MainPlayer.Uncollide(collisionRectangle);
+                    MainPlayer.HasCollided(collisionRectangle);
                 }
-
             }
         }
         public void Activate()
@@ -422,9 +426,14 @@ namespace ProjectLondon
             if (IsTransitionActive == false && IsAreaTransitionActive == false)
             {
                 MainPlayer.Update(gameTime);
+
+                if (IsAreaTransitionActive == true)
+                {
+                    return;
+                }
+
                 MapCamera.Position = MainPlayer.Position - new Vector2(MapCamera.BoundingRectangle.Width / 2, MapCamera.BoundingRectangle.Height / 2);
                 UpdateCameraPosition(ActiveArea);
-                HandleCollisions();
 
                 for(int i = 0; i <= Entities.Count() - 1; i++)
                 {

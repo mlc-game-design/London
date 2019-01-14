@@ -10,6 +10,8 @@ namespace ProjectLondon
 {
     public class PlayerActor
     {
+        public event EventHandler PositionChanged;
+
         private ContentManager Content { get; set; }
         private PlayerIndex ControllerIndex { get; set; }
         public Dictionary<string, bool> ControlKeys { get; protected set; }
@@ -33,6 +35,7 @@ namespace ProjectLondon
         public bool IsAnimationOverride { get; protected set; }
         private float AnimationOverrideTimer { get; set; }
         private Dictionary<string, Animation> Animations;
+        private AnimationLibrary AnimationLibrary { get; set; }
         private string CurrentAnimation;
         private bool IsAnimated { get; set; }
 
@@ -82,7 +85,7 @@ namespace ProjectLondon
             CreateControlConfiguration();
 
             MoveSpeed = 1.0f;
-            Position = position;
+            SetPosition(position);
             OriginPoint = Position + new Vector2(8, 8);
             IsColliding = false;
 
@@ -206,7 +209,7 @@ namespace ProjectLondon
                         }
                 }
 
-                AnimationManager.Play(Animations[CurrentAnimation]);
+                AnimationManager.Play(CurrentAnimation);
             }
 
             if (IsColliding == true)
@@ -224,13 +227,11 @@ namespace ProjectLondon
                 IsColliding = false;
             }
 
-            Position = Position + _position;
-            OriginPoint = Position + new Vector2(8, 8);
-            UpdateBoundingBoxPosition();
+            UpdatePosition(_position);
 
             if(IsAnimated == true)
             {
-                AnimationManager.Play(Animations[CurrentAnimation]);
+                AnimationManager.Play(CurrentAnimation);
                 AnimationManager.Update(gameTime);
             }
         }
@@ -409,15 +410,17 @@ namespace ProjectLondon
 
             CurrentAnimation = "MoveDown";
 
-            AnimationManager = new AnimationManager(Animations[CurrentAnimation]);
-            AnimationManager.Play(Animations[CurrentAnimation]);
+            AnimationLibrary = new AnimationLibrary("MainPlayer", Animations);
+
+            AnimationManager = new AnimationManager(AnimationLibrary);
+            AnimationManager.Play(CurrentAnimation);
 
             
         }
         public void AnimationOverride(string animationName)
         {
             CurrentAnimation = animationName;
-            AnimationManager.Play(Animations[CurrentAnimation]);
+            AnimationManager.Play(CurrentAnimation);
             AnimationOverrideTimer = 0.1f;
             IsAnimationOverride = true;
         }
@@ -590,6 +593,7 @@ namespace ProjectLondon
 
                 Position = Position + movePosition;
                 UpdateBoundingBoxPosition();
+                OnPositionChanged();
                 return;
             }
         }
@@ -703,6 +707,18 @@ namespace ProjectLondon
                 AnimationManager.Update(gameTime);
             }
         }
+        public void UpdatePosition(Vector2 newPosition)
+        {
+            if(newPosition == new Vector2(0,0))
+            {
+                return;
+            }
+            
+            Position = Position + newPosition;
+            OriginPoint = Position + new Vector2(8, 8);
+            UpdateBoundingBoxPosition();
+            OnPositionChanged();
+        }
         public void ResetAreaTransitionState()
         {
             TransitionMoveState = AreaTransitionMoveState.Start;
@@ -711,6 +727,7 @@ namespace ProjectLondon
         public void SetPosition(Vector2 newPosition)
         {
             Position = newPosition;
+            OriginPoint = new Vector2(newPosition.X + 8, newPosition.Y + 8);
         }
         public void SetFacing(string facing)
         {
@@ -742,11 +759,16 @@ namespace ProjectLondon
                     }
             }
 
-            AnimationManager.Play(Animations[CurrentAnimation]);
+            AnimationManager.Play(CurrentAnimation);
         }
         public void LoadGameHandler()
         {
             // USE THIS TO LOAD PLAYER FROM A SAVEGAME
+        }
+
+        public void OnPositionChanged()
+        {
+            PositionChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

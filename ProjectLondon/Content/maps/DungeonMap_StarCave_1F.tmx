@@ -28,16 +28,16 @@
   </object>
   <object id="61" name="mapEntitySpawn" x="432" y="80" width="16" height="16">
    <properties>
-    <property name="animationSetName" value="DungeonTorch"/>
-    <property name="currentAnimation" value="Idle"/>
-    <property name="isSolid" type="bool" value="true"/>
+    <property name="AnimationLibraryName" value="DungeonTorch"/>
+    <property name="CurrentAnimation" value="Idle"/>
+    <property name="IsSolid" type="bool" value="true"/>
    </properties>
   </object>
   <object id="63" name="mapEntitySpawn" x="352" y="80" width="16" height="16">
    <properties>
-    <property name="animationSetName" value="DungeonTorch"/>
-    <property name="currentAnimation" value="Idle"/>
-    <property name="isSolid" type="bool" value="true"/>
+    <property name="AnimationLibraryName" value="DungeonTorch"/>
+    <property name="CurrentAnimation" value="Idle"/>
+    <property name="IsSolid" type="bool" value="true"/>
    </properties>
   </object>
  </objectgroup>
