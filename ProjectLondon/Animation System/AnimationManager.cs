@@ -20,7 +20,7 @@ namespace ProjectLondon
     public class AnimationManager
     {
         private Animation Animation;
-        private AnimationLibrary Libary;
+        private AnimationBook Libary;
         private float FrameTimer;
 
         public AnimationManager(Animation animation)
@@ -28,9 +28,9 @@ namespace ProjectLondon
             Animation = animation;
         }
 
-        public AnimationManager(AnimationLibrary animationLibrary)
+        public AnimationManager(AnimationBook animationBook)
         {
-            Libary = new AnimationLibrary(animationLibrary);
+            Libary = new AnimationBook(animationBook);
         }
 
         public void Play(string animationReference)

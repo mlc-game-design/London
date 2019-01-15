@@ -61,21 +61,23 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssetManager\Animation.cs" />
-    <Compile Include="AssetManager\AnimationLibrary.cs" />
-    <Compile Include="AssetManager\AnimationManager.cs" />
-    <Compile Include="AssetManager\AssetManager.cs" />
+    <Compile Include="Animation System\Animation.cs" />
+    <Compile Include="Animation System\AnimationBook.cs" />
+    <Compile Include="Animation System\AnimationManager.cs" />
+    <Compile Include="Animation System\AnimationLibrary.cs" />
     <Compile Include="MainGame.cs" />
-    <Compile Include="MainMenu\MainMenuManager.cs" />
-    <Compile Include="MainMenu\MainMenuOption.cs" />
+    <Compile Include="Main Menu System\MainMenuManager.cs" />
+    <Compile Include="Main Menu System\MainMenuOption.cs" />
     <Compile Include="OverworldManager\IMapCollisionObject.cs" />
     <Compile Include="OverworldManager\IMapObject.cs" />
-    <Compile Include="OverworldManager\MapAreaDefinition.cs" />
+    <Compile Include="OverworldManager\MapEntityArea.cs" />
     <Compile Include="OverworldManager\MapCollisionSolidStatic.cs" />
     <Compile Include="OverworldManager\MapEntity.cs" />
     <Compile Include="OverworldManager\MapEntityInteractive.cs" />
     <Compile Include="OverworldManager\MapEntityInteractiveChest.cs" />
     <Compile Include="OverworldManager\MapEntityStatic.cs" />
+    <Compile Include="OverworldManager\MapManager.cs" />
+    <Compile Include="OverworldManager\MapManagerStore.cs" />
     <Compile Include="OverworldManager\MapObject.cs" />
     <Compile Include="OverworldManager\MapCollisionObject.cs" />
     <Compile Include="OverworldManager\MapTransitionHandler.cs" />

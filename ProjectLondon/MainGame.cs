@@ -46,7 +46,7 @@ namespace ProjectLondon
         /// </summary>
         protected override void Initialize()
         {
-            AssetManager.PopulateLists(Content);
+            AnimationLibrary.PopulateLists(Content);
             MainMenuManager = new MainMenuManager(Content);
 
             base.Initialize();

@@ -13,13 +13,27 @@ namespace ProjectLondon
     public class MapEntityStatic : MapEntity
     {
         private AnimationManager AnimationManager { get; set; }
-        private AnimationLibrary AnimationLibrary { get; set; }
+        private AnimationBook AnimationBook { get; set; }
         private string CurrentAnimation { get; set; }
 
+        public MapEntityStatic(bool isSolid, Vector2 position, int width, int height)
+        {
+            IsAnimated = false;
+
+            IsSolid = isSolid;
+            Position = position;
+
+            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, width, height);
+
+            AnimationBook = null;
+            AnimationManager = null;
+        }
         public MapEntityStatic(bool isSolid, Vector2 position, int width, int height, string animationLibraryName)
         {
+            IsAnimated = true;
+
             IsSolid = isSolid;
-            AnimationLibrary = new AnimationLibrary(animationLibraryName);
+            AnimationBook = new AnimationBook(animationLibraryName);
             AnimationManager = null;
 
             Position = position;
@@ -29,20 +43,30 @@ namespace ProjectLondon
 
         public void ConstructAnimationLibrary(string name, string currentAnimation)
         {
-            AnimationLibrary = new AnimationLibrary(name, AssetManager.GetAnimationLibrary(name).Animations);
+            AnimationBook = new AnimationBook(name, AnimationLibrary.GetAnimationLibrary(name).Animations);
 
             CurrentAnimation = currentAnimation;
 
-            AnimationManager = new AnimationManager(AnimationLibrary);
+            AnimationManager = new AnimationManager(AnimationBook);
             AnimationManager.Play(CurrentAnimation);
         }
 
         public override void Update(GameTime gameTime)
         {
+            if (IsAnimated == false)
+            {
+                return;
+            }
+
             AnimationManager.Update(gameTime);
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
+            if (IsAnimated == false)
+            {
+                return;
+            }
+
             AnimationManager.Draw(spriteBatch, Position);
         }
     }

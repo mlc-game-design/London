@@ -8,25 +8,25 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ProjectLondon
 {
-    public class AnimationLibrary
+    public class AnimationBook
     {
         public string Name { get; protected set; }
         public Dictionary<string,Animation> Animations { get; protected set; }
 
-        public AnimationLibrary(string name)
+        public AnimationBook(string name)
         {
             Name = name;
             Animations = new Dictionary<string, Animation>();
         }
-        public AnimationLibrary(string name, Dictionary<string,Animation> animations)
+        public AnimationBook(string name, Dictionary<string,Animation> animations)
         {
             Name = name;
             Animations = animations.ToDictionary(kv => kv.Key, kv => kv.Value.Clone() as Animation);
         }
-        public AnimationLibrary(AnimationLibrary animationLibrary)
+        public AnimationBook(AnimationBook AnimationBook)
         {
-            Name = animationLibrary.Name;
-            Animations = animationLibrary.Animations.ToDictionary(kv => kv.Key, kv => kv.Value.Clone() as Animation);
+            Name = AnimationBook.Name;
+            Animations = AnimationBook.Animations.ToDictionary(kv => kv.Key, kv => kv.Value.Clone() as Animation);
         }
 
         public void AddAnimation(string referenceName, Animation animation)

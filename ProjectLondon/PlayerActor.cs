@@ -35,7 +35,7 @@ namespace ProjectLondon
         public bool IsAnimationOverride { get; protected set; }
         private float AnimationOverrideTimer { get; set; }
         private Dictionary<string, Animation> Animations;
-        private AnimationLibrary AnimationLibrary { get; set; }
+        private AnimationBook AnimationBook { get; set; }
         private string CurrentAnimation;
         private bool IsAnimated { get; set; }
 
@@ -383,36 +383,36 @@ namespace ProjectLondon
         {
             Animations = new Dictionary<string, Animation>();
 
-            Animations.Add("MoveUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 160)));
-            Animations.Add("MoveDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 160)));
-            Animations.Add("MoveLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 160)));
-            Animations.Add("MoveRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 160)));
+            Animations.Add("MoveUp", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 160)));
+            Animations.Add("MoveDown", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 160)));
+            Animations.Add("MoveLeft", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 160)));
+            Animations.Add("MoveRight", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 160)));
 
-            Animations.Add("SwordDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 176)));
-            Animations.Add("SwordUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 176)));
-            Animations.Add("SwordRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 176)));
-            Animations.Add("SwordLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 176)));
+            Animations.Add("SwordDown", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 176)));
+            Animations.Add("SwordUp", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 176)));
+            Animations.Add("SwordRight", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 176)));
+            Animations.Add("SwordLeft", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 176)));
 
-            Animations.Add("PushingDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 192)));
-            Animations.Add("PushingUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 192)));
-            Animations.Add("PushingRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 192)));
-            Animations.Add("PushingLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 192)));
+            Animations.Add("PushingDown", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 192)));
+            Animations.Add("PushingUp", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 192)));
+            Animations.Add("PushingRight", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 192)));
+            Animations.Add("PushingLeft", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 192)));
 
-            Animations.Add("PullingDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 208)));
-            Animations.Add("PullingUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 208)));
-            Animations.Add("PullingRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 208)));
-            Animations.Add("PullingLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 208)));
+            Animations.Add("PullingDown", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 208)));
+            Animations.Add("PullingUp", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 208)));
+            Animations.Add("PullingRight", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 208)));
+            Animations.Add("PullingLeft", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 208)));
 
-            Animations.Add("CarryDown", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 224)));
-            Animations.Add("CarryUp", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 224)));
-            Animations.Add("CarryRight", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 224)));
-            Animations.Add("CarryLeft", new Animation(AssetManager.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 224)));
+            Animations.Add("CarryDown", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(0, 224)));
+            Animations.Add("CarryUp", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(32, 224)));
+            Animations.Add("CarryRight", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(64, 224)));
+            Animations.Add("CarryLeft", new Animation(AnimationLibrary.SpriteSheets["PlayerSheet"], 2, 16, 16, 0.2f, new Vector2(96, 224)));
 
             CurrentAnimation = "MoveDown";
 
-            AnimationLibrary = new AnimationLibrary("MainPlayer", Animations);
+            AnimationBook = new AnimationBook("MainPlayer", Animations);
 
-            AnimationManager = new AnimationManager(AnimationLibrary);
+            AnimationManager = new AnimationManager(AnimationBook);
             AnimationManager.Play(CurrentAnimation);
 
             

@@ -27,7 +27,7 @@ namespace ProjectLondon
 
         List<TiledMap> AdjacentMaps;
         List<MapObject> MapObjects { get; set; }
-        List<MapAreaDefinition> Areas { get; set; }
+        List<MapEntityArea> Areas { get; set; }
         List<MapEntity> Entities { get; set; }
         public List<MapCollisionSolidStatic> CollisionObjects { get; protected set; }
 
@@ -75,7 +75,7 @@ namespace ProjectLondon
             MapObjects = new List<MapObject>();
             CollisionObjects = new List<MapCollisionSolidStatic>();
             Entities = new List<MapEntity>();
-            Areas = new List<MapAreaDefinition>();
+            Areas = new List<MapEntityArea>();
 
             MapTransition = null;
             IsTransitionActive = false;
@@ -168,7 +168,7 @@ namespace ProjectLondon
                     case "mapEntitySpawn":
                         {
                             // Get AssetManager Data
-                            AnimationLibrary _animationLibrary = AssetManager.GetAnimationLibrary(_entityObject.Properties["AnimationLibraryName"]);
+                            AnimationBook _animationLibrary = AnimationLibrary.GetAnimationLibrary(_entityObject.Properties["AnimationLibraryName"]);
 
                             // Spawn the Entity
                             bool isSolid = Convert.ToBoolean(_entityObject.Properties["IsSolid"]);
@@ -193,10 +193,10 @@ namespace ProjectLondon
                         }
                 }
             }
-            foreach (TiledMapObject _areaDefintion in _mapAreaDefinitionLayer.Objects)
+            foreach (TiledMapObject _mapEntityArea in _mapAreaDefinitionLayer.Objects)
             {
-                MapAreaDefinition area = new MapAreaDefinition(_areaDefintion.Name, new Vector2((int)_areaDefintion.Position.X, (int)_areaDefintion.Position.Y),
-                    new Rectangle((int)_areaDefintion.Position.X, (int)_areaDefintion.Position.Y, (int)_areaDefintion.Size.Width, (int)_areaDefintion.Size.Height));
+                MapEntityArea area = new MapEntityArea(_mapEntityArea.Name, new Vector2((int)_mapEntityArea.Position.X, (int)_mapEntityArea.Position.Y),
+                    new Rectangle((int)_mapEntityArea.Position.X, (int)_mapEntityArea.Position.Y, (int)_mapEntityArea.Size.Width, (int)_mapEntityArea.Size.Height));
 
                 Areas.Add(area);
             }
@@ -207,9 +207,9 @@ namespace ProjectLondon
         /// <param name="mapAreaName">Reference name for Area being used to set the boundaries</param>
         private void SetAreaBoundaries(string mapAreaName)
         {
-            MapAreaDefinition _currentArea = null;
+            MapEntityArea _currentArea = null;
 
-            foreach(MapAreaDefinition _area in Areas)
+            foreach(MapEntityArea _area in Areas)
             {
                 if(_area.Name == mapAreaName)
                 {
@@ -342,7 +342,7 @@ namespace ProjectLondon
         /// </summary>
         public void HandleCollisions(object sender, EventArgs eventArgs)
         {
-            foreach (MapAreaDefinition _area in Areas)
+            foreach (MapEntityArea _area in Areas)
             {
                 if (MainPlayer.BoundingBox.Intersects(_area.BoundingBox) == true)
                 {

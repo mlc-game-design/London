@@ -7,13 +7,13 @@ using Microsoft.Xna.Framework;
 
 namespace ProjectLondon
 {
-    public class MapAreaDefinition : MapObject, IMapObject
+    public class MapEntityArea : MapObject, IMapObject
     {
         public string Name { get; protected set; }
 
-        public MapAreaDefinition(string name, Vector2 position, Rectangle areaRectangle)
+        public MapEntityArea(string name, Vector2 position, Rectangle areaRectangle)
         {
-            Type = "MapAreaDefinition";
+            Type = "MapEntityArea";
             Name = name;
             Position = position;
             BoundingBox = areaRectangle;
