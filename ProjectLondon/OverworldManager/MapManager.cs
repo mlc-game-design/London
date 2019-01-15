@@ -13,6 +13,8 @@ namespace ProjectLondon
     {
         private static ContentManager Content;
 
+        private const string MapStoreFolder = "maps\\";
+
         public static void Intialize(ContentManager content)
         {
             Content = content;
@@ -23,6 +25,8 @@ namespace ProjectLondon
             MapManagerStore _mapManagerStore = null;
 
             TiledMap _newMap = Content.Load<TiledMap>(assetPath);
+
+
 
             return _mapManagerStore;
         }
