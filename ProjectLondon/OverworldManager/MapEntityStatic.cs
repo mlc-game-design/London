@@ -69,5 +69,16 @@ namespace ProjectLondon
 
             AnimationManager.Draw(spriteBatch, Position);
         }
+        public MapEntityStatic Clone()
+        {
+            if(IsAnimated == true)
+            {
+                return new MapEntityStatic(IsSolid, Position, BoundingBox.Width, BoundingBox.Height, AnimationBook.Name);
+            }
+            else
+            {
+                return new MapEntityStatic(IsSolid, Position, BoundingBox.Width, BoundingBox.Height);
+            }
+        }
     }
 }

@@ -6,44 +6,51 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended;
 using MonoGame.Extended.Tiled;
 
 namespace ProjectLondon
 {
     public static class MapManager
     {
-        private static ContentManager Content;
-        public static TiledMap MapCurrent;
+        private static ContentManager Content { get; set; }
+        public static TiledMap MapCurrent { get; private set; }
+        public static MapManagerStore Store { get; private set; }
 
         private const string MapStoreFolder = "maps\\";
+        private const string BGMStoreFolder = "bgm\\";
 
         public static void Intialize(ContentManager content)
         {
             Content = content;
             MapCurrent = null;
+            Store = null;
+
         }
-        private static string CreateAssetPath(string assetName)
+
+        private static string CreateMapAssetPath(string assetName)
         {
             string _fullPath = MapStoreFolder + assetName;
             return _fullPath;
         }
+        private static string CreateBGMAssetPath(string assetName)
+        {
+            string _fullpath = BGMStoreFolder + assetName;
+            return _fullpath;
+        }
 
         public static MapManagerStore LoadMap(string assetName)
         {
-            MapManagerStore _mapManagerStore = null;
+            string _mapPath = CreateMapAssetPath(assetName);
+            MapCurrent = Content.Load<TiledMap>(_mapPath);
 
-            string _assetPath = CreateAssetPath(assetName);
-            MapCurrent = Content.Load<TiledMap>(_assetPath);
             LoadMapObjectLayers(MapCurrent);
 
-            if (MapCurrent.Properties.ContainsKey("startZone") == true)
-            {
-                SetAreaBoundaries(MapCurrent.Properties["startZone"]);
-            }
+            SetAreaBoundaries(MapCurrent.Properties["Default Area"]);
 
             if (MapBackgroundMusic == null)
             {
-                MapBackgroundMusic = contentManager.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
+                MapBackgroundMusic = Content.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
                 MediaPlayer.Volume = 0.4f;
                 MediaPlayer.Play(MapBackgroundMusic);
             }
@@ -51,7 +58,7 @@ namespace ProjectLondon
             {
                 if (MapCurrent.Properties["mapBackgroundMusic"] != MapBackgroundMusicAssetName)
                 {
-                    MapBackgroundMusic = contentManager.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
+                    MapBackgroundMusic = Content.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
                 }
 
                 MediaPlayer.Volume = 0.4f;
@@ -133,8 +140,31 @@ namespace ProjectLondon
             }
         }
 
-        
+        public static void PlayBGM()
+        {
+            MediaPlayer.Volume = 1.0f;
+            MediaPlayer.Play(Store.BackgroundMusic);
+        }
+        public static void PlayBGM(float volume)
+        {
+            MediaPlayer.Volume = volume;
+            MediaPlayer.Play(Store.BackgroundMusic);
+        }
 
+        public static Rectangle SetAreaBoundaries(string areaName)
+        {
+            Rectangle _currentArea = null;
 
+            _currentArea = Store.GetAreaByName(areaName);
+
+            if (ActiveArea != null)
+            {
+                ActiveArea = _currentArea.BoundingBox;
+            }
+            else
+            {
+                ActiveArea = new Rectangle((int)_currentArea.X, (int)_currentArea.Y, (int)_currentArea.Width, (int)_currentArea.Height);
+            }
+        }
     }
 }
