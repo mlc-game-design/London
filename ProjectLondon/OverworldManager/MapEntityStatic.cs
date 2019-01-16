@@ -51,7 +51,7 @@ namespace ProjectLondon
             AnimationManager.Play(CurrentAnimation);
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (IsAnimated == false)
             {
@@ -60,7 +60,7 @@ namespace ProjectLondon
 
             AnimationManager.Update(gameTime);
         }
-        public override void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             if (IsAnimated == false)
             {

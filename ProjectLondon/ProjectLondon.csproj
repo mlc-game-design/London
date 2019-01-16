@@ -69,6 +69,7 @@
     <Compile Include="Main Menu System\MainMenuManager.cs" />
     <Compile Include="Main Menu System\MainMenuOption.cs" />
     <Compile Include="OverworldManager\IMapCollisionObject.cs" />
+    <Compile Include="OverworldManager\IMapEntity.cs" />
     <Compile Include="OverworldManager\IMapObject.cs" />
     <Compile Include="OverworldManager\MapEntityArea.cs" />
     <Compile Include="OverworldManager\MapCollisionSolidStatic.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="OverworldManager\MapEntityInteractive.cs" />
     <Compile Include="OverworldManager\MapEntityInteractiveChest.cs" />
     <Compile Include="OverworldManager\MapEntityStatic.cs" />
+    <Compile Include="OverworldManager\MapEntityTransition.cs" />
     <Compile Include="OverworldManager\MapManager.cs" />
     <Compile Include="OverworldManager\MapManagerStore.cs" />
     <Compile Include="OverworldManager\MapObject.cs" />
