@@ -82,6 +82,7 @@
     <Compile Include="OverworldManager\MapManagerStore.cs" />
     <Compile Include="OverworldManager\MapObject.cs" />
     <Compile Include="OverworldManager\MapCollisionObject.cs" />
+    <Compile Include="OverworldManager\MapStoreHandler.cs" />
     <Compile Include="OverworldManager\MapTransitionHandler.cs" />
     <Compile Include="OverworldManager\OverworldManager.cs" />
     <Compile Include="PlayerActor.cs" />

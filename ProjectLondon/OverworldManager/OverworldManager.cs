@@ -435,9 +435,9 @@ namespace ProjectLondon
                 MapCamera.Position = MainPlayer.Position - new Vector2(MapCamera.BoundingRectangle.Width / 2, MapCamera.BoundingRectangle.Height / 2);
                 UpdateCameraPosition(ActiveArea);
 
-                for(int i = 0; i <= Entities.Count() - 1; i++)
+                foreach(IMapEntity _entity in Entities)
                 {
-                    Entities.ElementAt(i).Update(gameTime);
+                    _entity.Update(gameTime);
                 }
                 
             }
@@ -495,7 +495,7 @@ namespace ProjectLondon
                     MainPlayer.Draw(spriteBatch);
                 }
 
-                foreach (MapEntity entity in Entities)
+                foreach (IMapEntity entity in Entities)
                 {
                     entity.Draw(spriteBatch);
                 }

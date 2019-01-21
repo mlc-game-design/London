@@ -39,16 +39,14 @@ namespace ProjectLondon
         // Additional Resources
         private SoundEffect TransitionSFX { get; set; }
 
-        public MapEntityTransition(Vector2 position, int width, int height,
-            ContentManager content, string destinationMapName, Vector2 destinationPosition,
-            Rectangle boundingBox, string destinationAreaName, string destinationFacing) : base(false, position, width, height)
+        public MapEntityTransition(ContentManager content, string destinationMapName, Vector2 destinationPosition,
+            string destinationAreaName, string destinationFacing, Vector2 position, int width, int height) : base(false, position, width, height)
         {
             Content = content;
 
             Type = "MapEntityTransition";
             DestinationMapName = destinationMapName;
             DestinationPosition = destinationPosition;
-            BoundingBox = boundingBox;
             DestinationAreaName = destinationAreaName;
             DestinationFacing = destinationFacing;
             Timer = 0f;
@@ -150,7 +148,7 @@ namespace ProjectLondon
 
         public IMapEntity Clone()
         {
-            return new MapEntityTransition(Position, BoundingBox.Width, BoundingBox.Height, Content, DestinationMapName, DestinationPosition, BoundingBox, DestinationAreaName, DestinationFacing);
+            return new MapEntityTransition(Content, DestinationMapName, DestinationPosition, DestinationAreaName, DestinationFacing, Position, BoundingBox.Width, BoundingBox.Height);
         }
     }
 }

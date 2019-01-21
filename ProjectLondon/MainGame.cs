@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System;
 using System.Collections.Generic;
 
 namespace ProjectLondon
@@ -15,6 +16,8 @@ namespace ProjectLondon
         SpriteBatch spriteBatch;
 
         MainMenuManager MainMenuManager;
+        MapStoreHandler MapHandler;
+        MapManagerStore MapStore;
         SaveManager SaveManager;
         OverworldManager OverworldManager;
         PlayerActor MainPlayer;
@@ -37,7 +40,6 @@ namespace ProjectLondon
             graphics.IsFullScreen = false;
             graphics.ApplyChanges();
         }
-
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -48,10 +50,12 @@ namespace ProjectLondon
         {
             AnimationLibrary.PopulateLists(Content);
             MainMenuManager = new MainMenuManager(Content);
+            MapManager.Intialize(Content);
+            MapHandler = new MapStoreHandler();
+            MapHandler.SetStore(MapStore);
 
             base.Initialize();
         }
-
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -63,16 +67,6 @@ namespace ProjectLondon
 
             DebugOverlayTexture = Content.Load<Texture2D>("SinglePixel");
         }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            
-        }
-
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -102,6 +96,8 @@ namespace ProjectLondon
                             OverworldManager.Activate();
                             MainPlayer.SetPosition(new Vector2(OverworldManager.PlayerSpawnX, OverworldManager.PlayerSpawnY));
                             State = MainGameState.NormalPlay;
+
+                            MainPlayer.PositionChanged += HandleCollisions;
                         }
                         
                         break;
@@ -118,14 +114,13 @@ namespace ProjectLondon
             
             base.Update(gameTime);
         }
-
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             switch (State)
             {
@@ -153,6 +148,12 @@ namespace ProjectLondon
             
 
             base.Draw(gameTime);
+        }
+
+
+        private void HandleCollisions(object sender, EventArgs eventArgs)
+        {
+            MapHandler.HandleCollisions(MainPlayer);
         }
     }
 }

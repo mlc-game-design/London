@@ -13,6 +13,8 @@ namespace ProjectLondon
 {
     public class MainMenuManager
     {
+        private List<Texture2D> Splashscreens { get; set; }
+        private int CurrentSplashscreen { get; set; }
         private ContentManager Content { get; set; }
         private Animation TitleScreenAnimation { get; set; }
         private AnimationManager AnimationManager { get; set; }
@@ -24,20 +26,29 @@ namespace ProjectLondon
         private Texture2D MainMenuBackground { get; set; }
         private float InputTimer { get; set; }
         private float PressStartTimer { get; set; }
+        private float SplashTimer { get; set; }
         private bool PressStartVisible { get; set; }
         private int SelectedMenuOption { get; set; }
         public MainMenuState State { get; protected set; }
         public enum MainMenuState
         {
+            Splashscreen,
             Title,
-            FileSelect,
+            Complete
+        }
+        private SplashscreenState SplashState { get; set; }
+        private enum SplashscreenState
+        {
+            FadeIn,
+            Hold,
+            FadeOut,
             Complete
         }
 
         public MainMenuManager(ContentManager content)
         {
             Content = content;
-            State = MainMenuState.Title;
+            State = MainMenuState.Splashscreen;
             SelectedMenuOption = 0;
             InputTimer = 0f;
             PressStartTimer = 1.0f;
@@ -45,14 +56,17 @@ namespace ProjectLondon
             MainMenuBackground = Content.Load<Texture2D>("textures//mainMenu//MainMenuBackBeta01");
             PressStartFont = Content.Load<SpriteFont>("spritefonts//MainMenuFont");
             MainMenuSong = Content.Load<Song>("bgm/Brittle Rille");
-            //TitleScreenAnimation = new Animation(Content.Load<Texture2D>("textures/mainMenu/TitleScreenGif"), 8, 692, 500, 0.2f);
             PressStartTextPosition = new Vector2(320, 544);
             TitleTextPosition = new Vector2(320, 96);
             PressStartTextPosition = AdjustPosition(PressStartFont, PressStartTextPosition, "press start!");
             TitleTextPosition = AdjustPosition(PressStartFont, TitleTextPosition, "Project London");
 
-            //AnimationManager = new AnimationManager(TitleScreenAnimation);
-            //AnimationManager.Play(TitleScreenAnimation);
+            Splashscreens = new List<Texture2D>();
+            Splashscreens.Add(Content.Load<Texture2D>("textures//mainMenu//MLCLogo"));
+            SplashTimer = 0f;
+            CurrentSplashscreen = 0;
+
+            SplashState = SplashscreenState.FadeIn;
 
             MediaPlayer.Volume = 0.5f;
             MediaPlayer.IsRepeating = true;
@@ -90,6 +104,69 @@ namespace ProjectLondon
             KeyboardState _keyState = Keyboard.GetState();
             float _deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            switch (State)
+            {
+                case MainMenuState.Splashscreen:
+                    {
+                        switch (SplashState)
+                        {
+                            case SplashscreenState.FadeIn:
+                                {
+                                    SplashTimer += _deltaTime;
+
+                                    if(SplashTimer >= 1.0f)
+                                    {
+                                        SplashTimer = 2.5f;
+                                        SplashState = SplashscreenState.Hold;
+                                    }
+                                    break;
+                                }
+                            case SplashscreenState.Hold:
+                                {
+                                    SplashTimer -= _deltaTime;
+
+                                    if (SplashTimer <= 0)
+                                    {
+                                        SplashTimer = 1.0f;
+                                        SplashState = SplashscreenState.FadeOut;
+                                    }
+                                    break;
+                                }
+                            case SplashscreenState.FadeOut:
+                                {
+                                    SplashTimer -= _deltaTime;
+
+                                    if (SplashTimer <= 0)
+                                    {
+                                        SplashTimer = 0f;
+                                        SplashState = SplashscreenState.Complete;
+                                    }
+                                    break;
+                                }
+                            case SplashscreenState.Complete:
+                                {
+                                    CurrentSplashscreen += 1;
+
+                                    if(CurrentSplashscreen == Splashscreens.Count())
+                                    {
+                                        State = MainMenuState.Title;
+                                    }
+                                    else
+                                    {
+                                        SplashState = SplashscreenState.FadeIn;
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case MainMenuState.Title:
+                    {
+
+                        break;
+                    }
+            }
+
             if(PressStartTimer <= 0)
             {
                 switch (PressStartVisible)
@@ -122,14 +199,52 @@ namespace ProjectLondon
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(MainMenuBackground, new Rectangle(0, 0, 640, 640), Color.White);
-            //AnimationManager.Draw(spriteBatch, new Rectangle(0,0,640,640));
-            DrawText(spriteBatch, PressStartFont, "Project London", Color.Black, Color.Yellow, 1.0f, TitleTextPosition);
-
-            if (PressStartVisible == true)
+            switch (State)
             {
-                DrawText(spriteBatch, PressStartFont, "press start!", Color.Black, Color.Purple, 1.0f, PressStartTextPosition);
+                case MainMenuState.Splashscreen:
+                    {
+                        float _splashAlpha = 0f;
+
+                        switch (SplashState)
+                        {
+                            case SplashscreenState.FadeIn:
+                                {
+                                    _splashAlpha = SplashTimer * 2;
+                                    break;
+                                }
+                            case SplashscreenState.Hold:
+                                {
+                                    _splashAlpha = 1f;
+                                    break;
+                                }
+                            case SplashscreenState.FadeOut:
+                                {
+                                    _splashAlpha = SplashTimer * 2;
+                                    break;
+                                }
+                            case SplashscreenState.Complete:
+                                {
+                                    return;
+                                }
+                        }
+                        
+                        spriteBatch.Draw(Splashscreens.ElementAt(CurrentSplashscreen), new Rectangle(0, 0, 640, 640), Color.White * _splashAlpha);
+                        break;
+                    }
+                case MainMenuState.Title:
+                    {
+                        spriteBatch.Draw(MainMenuBackground, new Rectangle(0, 0, 640, 640), Color.White);
+                        DrawText(spriteBatch, PressStartFont, "Project London", Color.Black, Color.Yellow, 1.0f, TitleTextPosition);
+
+                        if (PressStartVisible == true)
+                        {
+                            DrawText(spriteBatch, PressStartFont, "press start!", Color.Black, Color.Purple, 1.0f, PressStartTextPosition);
+                        }
+                        break;
+                    }
             }
+
+            
         }
         
     }

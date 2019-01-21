@@ -20,12 +20,26 @@ namespace ProjectLondon
         private const string MapStoreFolder = "maps\\";
         private const string BGMStoreFolder = "bgm\\";
 
+        private static string LoadedSongName { get; set; }
+
+        public static Rectangle ActiveArea { get; private set; }
+
+        public static MapHandlingState State { get; private set; }
+        public enum MapHandlingState
+        {
+            Normal,
+            AreaTransition,
+            MapChange
+        }
+
         public static void Intialize(ContentManager content)
         {
             Content = content;
             MapCurrent = null;
             Store = null;
-
+            LoadedSongName = "";
+            ActiveArea = new Rectangle(0, 0, 0, 0);
+            State = MapHandlingState.Normal;
         }
 
         private static string CreateMapAssetPath(string assetName)
@@ -41,39 +55,35 @@ namespace ProjectLondon
 
         public static MapManagerStore LoadMap(string assetName)
         {
+            Store = new MapManagerStore(Content);
+
             string _mapPath = CreateMapAssetPath(assetName);
             MapCurrent = Content.Load<TiledMap>(_mapPath);
 
-            LoadMapObjectLayers(MapCurrent);
+            LoadMapObjectLayers(Store, MapCurrent);
 
             SetAreaBoundaries(MapCurrent.Properties["Default Area"]);
 
-            if (MapBackgroundMusic == null)
+            if ((LoadedSongName == "") || (LoadedSongName != MapCurrent.Properties["mapBackgroundMusic"]))
             {
-                MapBackgroundMusic = Content.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
-                MediaPlayer.Volume = 0.4f;
-                MediaPlayer.Play(MapBackgroundMusic);
-            }
-            else
-            {
-                if (MapCurrent.Properties["mapBackgroundMusic"] != MapBackgroundMusicAssetName)
-                {
-                    MapBackgroundMusic = Content.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
-                }
-
-                MediaPlayer.Volume = 0.4f;
-                MediaPlayer.Play(MapBackgroundMusic);
+                Song _song = Content.Load<Song>("bgm//" + MapCurrent.Properties["mapBackgroundMusic"]);
+                float _volume = float.Parse(MapCurrent.Properties["Music Volume"]);
+                Store.PlayBGM(_song, _volume);
             }
 
-            MapBackgroundMusicAssetName = MapCurrent.Properties["mapBackgroundMusic"];
+            LoadedSongName = MapCurrent.Properties["mapBackgroundMusic"];
 
-            return _mapManagerStore;
+            return Store;
         }
-        private static void LoadMapObjectLayers(TiledMap tiledMap)
+        private static void LoadMapObjectLayers(MapManagerStore store, TiledMap tiledMap)
         {
             TiledMapObjectLayer _mapEntityObjectLayer = MapCurrent.GetLayer<TiledMapObjectLayer>("Entity Layer");
             TiledMapObjectLayer _mapCollisionLayer = MapCurrent.GetLayer<TiledMapObjectLayer>("Collision Layer");
             TiledMapObjectLayer _mapAreaDefinitionLayer = MapCurrent.GetLayer<TiledMapObjectLayer>("Area Definitions");
+
+            List<MapEntityArea> _areas = new List<MapEntityArea>();
+            List<MapEntityStatic> _collisionObjects = new List<MapEntityStatic>();
+            List<MapEntity> _entities = new List<MapEntity>();
 
             foreach (TiledMapObject _entityObject in _mapEntityObjectLayer.Objects)
             {
@@ -82,25 +92,31 @@ namespace ProjectLondon
                     case "mapPlayerSpawn":
                         {
                             // Run Player Spawn Code Here
-                            PlayerSpawnX = Convert.ToInt32(_entityObject.Position.X);
-                            PlayerSpawnY = Convert.ToInt32(_entityObject.Position.Y);
-                            IsPlayerSpawn = true;
-
+                            Vector2 _playerSpawnPosition = new Vector2(Convert.ToInt32(_entityObject.Position.X), Convert.ToInt32(_entityObject.Position.Y));
+                            store.SetPlayerDefaultSpawn(_playerSpawnPosition);
                             break;
                         }
                     case "mapTransition":
                         {
                             // Create Transition Objects
-                            float destinationX, destinationY;
+                            Vector2 _destinationPosition;
+                            float _destinationX, _destinationY;
 
-                            destinationX = Convert.ToInt32(_entityObject.Properties["mapDestinationX"]);
-                            destinationY = Convert.ToInt32(_entityObject.Properties["mapDestinationY"]);
+                            _destinationX = Convert.ToInt32(_entityObject.Properties["mapDestinationX"]);
+                            _destinationY = Convert.ToInt32(_entityObject.Properties["mapDestinationY"]);
+                            _destinationPosition = new Vector2(_destinationX, _destinationY);
 
-                            MapTransitionHandler mapTransition = new MapTransitionHandler(contentManager, _entityObject.Properties["mapDestination"],
-                                new Vector2((float)destinationX, (float)destinationY), new Rectangle((int)_entityObject.Position.X, (int)_entityObject.Position.Y, (int)_entityObject.Size.Width, (int)_entityObject.Size.Height),
-                                _entityObject.Properties["mapDestinationArea"], _entityObject.Properties["mapDestinationFacing"]);
+                            int _width, _height;
+                            Vector2 _position;
 
-                            MapObjects.Add(mapTransition);
+                            _width = Convert.ToInt32(_entityObject.Size.Width);
+                            _height = Convert.ToInt32(_entityObject.Size.Height);
+                            _position = _entityObject.Position;
+
+                            MapEntityTransition mapTransition = new MapEntityTransition(Content, _entityObject.Properties["DestinationMap"], _destinationPosition,
+                                _entityObject.Properties["Destination Area"], _entityObject.Properties["Destination Facing"], _position, _width, _height);
+
+                            _collisionObjects.Add(mapTransition);
                             break;
                         }
                     case "mapEntitySpawn":
@@ -114,7 +130,7 @@ namespace ProjectLondon
                             MapEntityStatic _mapEntity = new MapEntityStatic(isSolid, new Vector2(_entityObject.Position.X, _entityObject.Position.Y), (int)_entityObject.Size.Width, (int)_entityObject.Size.Height, _entityObject.Properties["AnimationLibraryName"]);
                             _mapEntity.ConstructAnimationLibrary(_animationLibrary.Name, _entityObject.Properties["CurrentAnimation"]);
 
-                            Entities.Add(_mapEntity);
+                            _entities.Add(_mapEntity);
                             break;
                         }
                 }
@@ -125,8 +141,8 @@ namespace ProjectLondon
                 {
                     case "solidStatic":
                         {
-                            MapCollisionSolidStatic solid = new MapCollisionSolidStatic(_collisionObject.Position, (int)_collisionObject.Size.Width, (int)_collisionObject.Size.Height);
-                            CollisionObjects.Add(solid);
+                            MapEntityStatic solid = new MapEntityStatic(true, _collisionObject.Position, (int)_collisionObject.Size.Width, (int)_collisionObject.Size.Height);
+                            _collisionObjects.Add(solid);
                             break;
                         }
                 }
@@ -136,35 +152,41 @@ namespace ProjectLondon
                 MapEntityArea area = new MapEntityArea(_mapEntityArea.Name, new Vector2((int)_mapEntityArea.Position.X, (int)_mapEntityArea.Position.Y),
                     new Rectangle((int)_mapEntityArea.Position.X, (int)_mapEntityArea.Position.Y, (int)_mapEntityArea.Size.Width, (int)_mapEntityArea.Size.Height));
 
-                Areas.Add(area);
+                _areas.Add(area);
             }
+
+            store.CloneAssetLists(_areas, _collisionObjects, _entities);
         }
 
-        public static void PlayBGM()
+        public static void SetAreaBoundaries(string areaName)
         {
-            MediaPlayer.Volume = 1.0f;
-            MediaPlayer.Play(Store.BackgroundMusic);
-        }
-        public static void PlayBGM(float volume)
-        {
-            MediaPlayer.Volume = volume;
-            MediaPlayer.Play(Store.BackgroundMusic);
-        }
-
-        public static Rectangle SetAreaBoundaries(string areaName)
-        {
-            Rectangle _currentArea = null;
+            MapEntityArea _currentArea = null;
 
             _currentArea = Store.GetAreaByName(areaName);
 
-            if (ActiveArea != null)
+            if(_currentArea != null)
             {
-                ActiveArea = _currentArea.BoundingBox;
+                Store.SetActiveAreaName(areaName);
+
+                if (ActiveArea != null)
+                {
+                    ActiveArea = _currentArea.BoundingBox;
+                }
+                else
+                {
+                    ActiveArea = new Rectangle((int)_currentArea.Position.X, (int)_currentArea.Position.Y, (int)_currentArea.BoundingBox.Width, (int)_currentArea.BoundingBox.Height);
+                }
             }
             else
             {
-                ActiveArea = new Rectangle((int)_currentArea.X, (int)_currentArea.Y, (int)_currentArea.Width, (int)_currentArea.Height);
+                return;
             }
+        }
+        public static void IntializeAreaTransition()
+        {
+
+
+            State = MapHandlingState.AreaTransition;
         }
     }
 }
